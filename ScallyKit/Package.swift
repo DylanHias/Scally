@@ -8,7 +8,10 @@ let package = Package(
         .library(name: "ScallyKit", targets: ["ScallyKit"])
     ],
     targets: [
-        .target(name: "ScallyKit"),
+        .target(
+            name: "ScallyKit",
+            resources: [.copy("Resources/RealESRGANx4.mlpackage")]
+        ),
         .testTarget(name: "ScallyKitTests", dependencies: ["ScallyKit"])
     ]
 )
