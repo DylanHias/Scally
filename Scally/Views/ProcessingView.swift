@@ -16,12 +16,14 @@ struct ProcessingView: View {
                 Image(uiImage: pending.preview)
                     .resizable().scaledToFit()
                     .frame(maxWidth: .infinity)
+                    .frame(maxHeight: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: Metrics.card))
                     .opacity(0.4)
                     .overlay(alignment: .center) { readout }
                     .padding(.horizontal, Metrics.gutter)
+                    .padding(.top, 8)
 
-                Spacer(minLength: 16)
+                Spacer(minLength: 12)
                 metrics
 
                 Button("Cancel") {

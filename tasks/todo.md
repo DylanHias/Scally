@@ -69,8 +69,12 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
 
 ## Phase 7 — User interface
 All six built against `docs/design/2026-09-20-flow-board.md`, both themes.
-Import and Configure are verified on real hardware. Processing, Result, History and
-Settings compile and are unit-tested but have NOT been exercised on screen yet.
+**All six screens verified on screen 2026-09-20.** Import and Configure on real
+hardware; Processing, Result, History and Settings walked in the simulator via a
+launch-argument harness with seeded data. Three bugs found and fixed by looking:
+ASCII `x`/`->` where the design specifies `×`/`→`; a zoom hint that said "tap 100%
+for real pixels" while already at 226% of real pixels; and a dead vertical gap on
+Processing.
 - [x] **Task 16** — Import screen and scale configuration — 12 model tests, **3 fix rounds**
       1. Wordmark crushed to "S..." inside an iOS 26 toolbar glass capsule; moved into
          the content as a real header.
@@ -92,7 +96,13 @@ Settings compile and are unit-tested but have NOT been exercised on screen yet.
       design omits but BSD-3-Clause requires
 
 ## Phase 8 — Device validation
-- [ ] **Task 22** — Device matrix and performance verification
+- [~] **Task 22** — Device matrix and performance verification
+      Measured on iPhone 17 Pro (Release): 143 ms/tile on the Neural Engine with
+      x4plus, 683 ms GPU, 1026 ms CPU. `os_proc_available_memory` reports 6434 MB
+      with the increased-memory entitlement, 3429 MB without.
+      **Still outstanding:** a genuinely old device. The memory clamp has never
+      fired on real hardware - a 17 Pro grants 4x on everything - so that path
+      remains unverified outside tests.
 ## Notes
 
 **Needs Dylan before the relevant task:**

@@ -56,9 +56,10 @@ final class UpscaleRecord {
 
     var wasClamped: Bool { appliedScale != requestedScale }
 
-    /// "240x240 -> 960x960", as the history rows render it.
+    /// "240×240 → 960×960", as the design renders it. Real multiplication and
+    /// arrow glyphs: the ASCII-only rule applies to vault notes, not to UI.
     var dimensionSummary: String {
-        "\(inputWidth)x\(inputHeight) -> \(outputWidth)x\(outputHeight)"
+        "\(inputWidth)×\(inputHeight) → \(outputWidth)×\(outputHeight)"
     }
 
     var totalBytes: Int { inputBytes + outputBytes }

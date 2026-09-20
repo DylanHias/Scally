@@ -58,9 +58,7 @@ struct HoldToCompare: View {
                         }
                     }
                     Spacer()
-                    Text(showingOriginal ? "ORIGINAL"
-                         : (zoom < 1.01 ? "TAP 100% TO SEE REAL PIXELS · HOLD FOR ORIGINAL"
-                                        : "HOLD TO SEE ORIGINAL"))
+                    Text(hint(viewport: geometry.size))
                         .font(Typography.sectionLabel)
                         .tracking(0.9)
                         .foregroundStyle(.white.opacity(showingOriginal ? 0.95 : 0.6))
@@ -80,6 +78,15 @@ struct HoldToCompare: View {
     }
 
     private func clamp(_ value: CGFloat) -> CGFloat { min(max(value, 1), maximumZoom) }
+
+    /// Only suggest tapping 100% when the view is actually below actual pixels.
+    /// A small output can already exceed 1:1 at fit, and telling someone to go
+    /// find real pixels they are already looking at is nonsense.
+    private func hint(viewport: CGSize) -> String {
+        if showingOriginal { return "ORIGINAL" }
+        let effective = fitScale(viewport: viewport) * zoom * UIScreen.main.scale
+        return effective < 0.99 ? "TAP 100% FOR REAL PIXELS" : "HOLD TO SEE ORIGINAL"
+    }
 
     /// Fit-to-frame scale for the output image, in points per image point.
     private func fitScale(viewport: CGSize) -> CGFloat {

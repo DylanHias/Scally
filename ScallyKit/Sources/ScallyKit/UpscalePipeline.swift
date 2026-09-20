@@ -13,6 +13,19 @@ public struct UpscaleResult: Sendable, Identifiable, Hashable {
     public let requestedScale: Int
     public let duration: TimeInterval
 
+    /// A public struct with an internal memberwise init cannot be constructed
+    /// by consumers at all, which makes it useless for previews, fixtures and
+    /// anything outside the package.
+    public init(outputURL: URL, outputWidth: Int, outputHeight: Int,
+                appliedScale: Int, requestedScale: Int, duration: TimeInterval) {
+        self.outputURL = outputURL
+        self.outputWidth = outputWidth
+        self.outputHeight = outputHeight
+        self.appliedScale = appliedScale
+        self.requestedScale = requestedScale
+        self.duration = duration
+    }
+
     public var wasClamped: Bool { appliedScale != requestedScale }
 }
 

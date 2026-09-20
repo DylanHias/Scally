@@ -70,7 +70,8 @@ private func stagedUpscale(in root: URL, outputBytes: Int = 3000) throws -> (sou
                                 originalFilename: "IMG_4471.JPG", inputWidth: 240, inputHeight: 240,
                                 thumbnail: Data([9]), context: context)
 
-    #expect(record.dimensionSummary == "240x240 -> 960x960")
+    // The design specifies real glyphs, not ASCII: "240×240 → 960×960".
+    #expect(record.dimensionSummary == "240×240 → 960×960")
 }
 
 @Test func deletingRemovesAllThreeFilesAndTheRecord() throws {
