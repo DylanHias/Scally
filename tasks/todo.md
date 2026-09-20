@@ -10,14 +10,19 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
       app builds and its test target runs on iPhone 17 Pro / iOS 26.5
 
 ## Phase 1 — Model conversion (highest risk, built first)
-- [x] **Task 2** — PyTorch to Core ML conversion script
-      Converted first try; `load_state_dict(strict=True)` passed, so the architecture
-      guess (SRVGGNetCompact, 32 conv, nearest skip) was right. 2.4 MB at FP16.
+- [x] **Task 2** — PyTorch to Core ML conversion script — **model swapped 2026-09-20**
+      Originally `realesr-general-x4v3` (SRVGGNetCompact, 1.2M params, 2.4 MB), converted
+      first try. Replaced with `RealESRGAN_x4plus` (RRDBNet, 16.70M params, 33 MB) after
+      device testing showed the small model was within 3.6/255 of a bicubic stretch on a
+      clean photo. RRDBNet also loaded with `strict=True` first try. convert.py now takes
+      a model argument and supports both.
 - [x] **Task 3** — Numerical parity gate — **1 fix round**
       First run failed at 0.0286 vs 0.00784. Root-caused to FP16 accumulation, not
       architecture: an FP32 conversion of the same graph matches PyTorch to 2.1e-5.
       Gate rebuilt as three tests (structural FP32 / photographic FP16 / PSNR floor).
-      All 3 pass. See the plan's Task 3 note for the known 1% margin fragility.
+      Thresholds are now per-architecture: the 120-layer RRDBNet legitimately accumulates
+      more error than the 33-layer SRVGGNet, and the recorded measurements for both sit
+      in the file. All 3 pass for x4plus.
 
 ## Phase 2 — Geometry and composition (no ML)
 - [x] **Task 4** — Tile geometry — 6 tests, no fix rounds
@@ -44,9 +49,16 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
       temp dir while Swift Testing ran tests in parallel; this also closed a spec gap,
       since scratch belongs in Caches). Public surface narrowed: 35 declarations
       internalised, leaving only the pipeline and its vocabulary public.
-- [x] **Task 14** — Golden image regression tests — 3 cases, **1 fix round**
-      (reference files were HEIC named .png; ImageIO sniffs content so the assertion
-      passed and hid it). References inspected visually before committing.
+- [x] **Task 14** — Golden image regression tests — 3 cases, **3 fix rounds**
+      1. Reference files were HEIC named .png; ImageIO sniffs content so the assertion
+         passed and hid it.
+      2. The gate correctly caught the x4plus swap (31.1 dB vs a 35 dB bound) and the
+         references were regenerated.
+      3. **The fixtures were not deterministic.** They were seeded from
+         `name.hashValue`, which Swift randomises per process, so the texture case failed
+         against its own freshly recorded reference. Now seeded by FNV-1a over the name's
+         bytes; verified stable over three consecutive runs. Compute units are also pinned
+         to CPU so the gate cannot drift with Core ML scheduling.
 
 ## Phase 6 — App data layer
 - [x] **Task 15** — App target, SwiftData record, library store — 9 tests, no fix rounds
@@ -84,7 +96,9 @@ Settings compile and are unit-tested but have NOT been exercised on screen yet.
 ## Notes
 
 **Needs Dylan before the relevant task:**
-- Minimum deployment target — provisionally iOS 18.0, unconfirmed. Blocks Task 15.
+- Minimum deployment target — provisionally iOS 18.0, unconfirmed.
+- ~~Per-tile time constant needs device calibration.~~ Done 2026-09-20: measured
+  143 ms/tile on an iPhone 17 Pro; `ConfigureModel.secondsPerTile` is now 0.16.
 - Whether history stores a "before" copy. Blocks Task 20. Do not ship an image
   compared to itself.
 - App display name and icon — "Scally" is only the directory name.

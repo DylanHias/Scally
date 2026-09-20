@@ -27,18 +27,34 @@ import torch
 import coremltools as ct
 import pytest
 
-from convert import load_model, OUTPUT, TILE
+from convert import load_model, OUTPUT, TILE, MODEL
+
+# Bounded at the 99.9th percentile rather than the single worst pixel: across
+# 786k pixels the max is a noisy order statistic, and gating on it put the suite
+# at 99% of its limit, which flakes and then gets ignored.
+PERCENTILE = 99.9
+
+# Thresholds are per-model because error accumulates with depth, and these two
+# checkpoints differ by roughly 4x in layer count. Calibrated from measurement,
+# with headroom - not fitted to make a run pass:
+#
+#            layers  FP32 max   FP16 p99.9   FP16 mean   FP16 PSNR
+#   x4v3       ~33   2.1e-5     0.86/255     0.175/255   61.2 dB
+#   x4plus    ~120   9.9e-5     2.59/255     0.498/255   51.9 dB
+#
+# The structural gate keeps its teeth either way: a genuine architecture defect
+# produces errors orders of magnitude larger than these, not a factor of three.
+_THRESHOLDS = {
+    "srvgg": dict(structural=1e-4, pct=2.0 / 255, mean=0.5 / 255, psnr=55.0),
+    "rrdb":  dict(structural=5e-4, pct=4.0 / 255, mean=1.0 / 255, psnr=48.0),
+}
+_T = _THRESHOLDS[MODEL["arch"]]
 
 # FP32 has nowhere to hide: anything above this is a structural defect.
-STRUCTURAL_TOLERANCE = 1e-4
-# Shipped FP16 model on realistic content. Bounded at the 99.9th percentile rather
-# than the single worst pixel: across 786k pixels the max is a noisy order statistic,
-# and gating on it put the suite at 99% of its limit, which flakes and then gets
-# ignored. The percentile and the PSNR floor measure the same thing stably.
-PERCENTILE = 99.9
-MAX_ABS_TOLERANCE = 2.0 / 255.0
-MEAN_ABS_TOLERANCE = 0.5 / 255.0
-MIN_PHOTOGRAPHIC_PSNR_DB = 55.0
+STRUCTURAL_TOLERANCE = _T["structural"]
+MAX_ABS_TOLERANCE = _T["pct"]
+MEAN_ABS_TOLERANCE = _T["mean"]
+MIN_PHOTOGRAPHIC_PSNR_DB = _T["psnr"]
 # Below roughly 45 dB, FP16 error would start to be visible.
 MIN_PSNR_DB = 45.0
 

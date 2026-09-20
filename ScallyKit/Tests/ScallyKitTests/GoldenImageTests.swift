@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import CoreML
 @testable import ScallyKit
 
 /// Deterministic pseudo-random source so fixtures are byte-identical on every
@@ -24,8 +25,22 @@ private let fixtureSize = 96
 /// Three synthetic but image-like fixtures. Generated in code rather than
 /// committed as inputs: deterministic, no binary blobs, and no third-party
 /// image licensing to worry about inside the test bundle.
+/// Seed derived from the name's bytes, NOT from `hashValue`.
+///
+/// Swift seeds String hashing randomly per process, so `name.hashValue` differs
+/// on every run. That made these "deterministic" fixtures different each time,
+/// and the texture case - which uses the most generator output - failed against
+/// its own freshly recorded reference.
+private func seed(for name: String) -> UInt64 {
+    var value: UInt64 = 0xcbf2_9ce4_8422_2325          // FNV-1a offset basis
+    for byte in name.utf8 {
+        value = (value ^ UInt64(byte)) &* 0x1000_0000_01b3
+    }
+    return value | 1
+}
+
 private func makeFixture(named name: String) -> [UInt8] {
-    var generator = SeededGenerator(seed: UInt64(abs(name.hashValue)) | 1)
+    var generator = SeededGenerator(seed: seed(for: name))
     var pixels = [UInt8](repeating: 255, count: fixtureSize * fixtureSize * 4)
 
     for y in 0..<fixtureSize {
@@ -98,7 +113,12 @@ func upscaleMatchesGoldenReference(name: String) async throws {
     let source = try writeFixtureImage(named: name)
     defer { try? FileManager.default.removeItem(at: source) }
 
-    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(), faceRestorer: NoopFaceRestorer())
+    // CPU-only, deliberately: a regression gate must be reproducible, and .all
+    // lets Core ML schedule across ANE, GPU and CPU as it sees fit. (That was
+    // not what broke this test - see `seed(for:)` - but pinning it removes a
+    // real source of variance for free, since the fixtures are one tile each.)
+    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(computeUnits: .cpuOnly),
+                                   faceRestorer: NoopFaceRestorer())
     let result = try await pipeline.run(source: source, requestedScale: 4) { _ in }
     defer { try? FileManager.default.removeItem(at: result.outputURL) }
 

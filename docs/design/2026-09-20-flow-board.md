@@ -114,3 +114,21 @@ reproducing its copyright notice and disclaimer in materials distributed with th
 (spec §2), so this cannot simply be dropped. Proposal: add a `Licenses` row beneath
 `Save location`, styled as the existing rows. Flagged for Dylan; implementing it that way
 unless told otherwise.
+
+
+## 8. Measured device figures (added 2026-09-20)
+
+iPhone 17 Pro, Release build, `RealESRGAN_x4plus` on the Neural Engine:
+
+| Compute unit | ms per 256x256 tile |
+|---|---|
+| ANE (`.all`) | **143** |
+| CPU + GPU | 683 |
+| CPU only | 1026 |
+
+End-to-end 512x384 -> 2048x1536 in 1.12 s. A 12MP photo is 221 tiles, so about
+32 s; a 3249x2262 photo is 140 tiles, about 20 s.
+
+The design's own `ESTIMATE` values are illustrative - `240x240 -> 6 s` and
+`3024x4032 -> 22 s` imply per-tile rates roughly 60x apart. The app computes the
+estimate from the real tile count at 0.16 s/tile instead.

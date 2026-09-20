@@ -15,12 +15,17 @@ struct ConfigureModel {
 
     static let offeredScales = [2, 4]
 
-    /// Seconds per 256x256 tile. Provisional: derived from desktop runs, and
-    /// explicitly on the Phase 8 device-matrix checklist to be re-measured on
-    /// real hardware. The design's own estimates ("6 s" for a 240px image,
-    /// "22 s" for a 12MP one) imply per-tile rates roughly 60x apart, so they
-    /// are illustrative rather than literal.
-    static let secondsPerTile = 0.35
+    /// Seconds per 256x256 tile.
+    ///
+    /// Measured 2026-09-20 on an iPhone 17 Pro, Release build, RealESRGAN
+    /// x4plus on the Neural Engine: 143 ms/tile (GPU 683 ms, CPU 1026 ms).
+    /// A little headroom is added because older devices are slower and the
+    /// first tile carries model load.
+    ///
+    /// The design's own estimates ("6 s" for a 240px image, "22 s" for a 12MP
+    /// one) imply per-tile rates roughly 60x apart, so they are illustrative
+    /// rather than literal.
+    static let secondsPerTile = 0.16
     private static let tileSize = 256
     private static let overlap = 16
 
