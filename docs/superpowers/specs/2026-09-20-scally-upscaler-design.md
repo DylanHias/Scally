@@ -224,6 +224,10 @@ failure invalidates the project, and it is verifiable from a command line.
 SwiftData stores one `UpscaleRecord` per job: timestamp, scale factor, source
 and output filenames, input and output pixel dimensions, and duration.
 
+**The input image is retained** (design §6, divergence 7). Result and history both display
+INPUT alongside OUTPUT, and press-and-hold compares against the real original, so a copy of
+the source is stored beside the output rather than discarded.
+
 Images live on disk in Application Support, not Caches — the system may purge
 Caches, and a history that empties itself is worse than no history. Each record
 carries a 512px thumbnail so the grid never decodes a full-size output to draw a
@@ -234,6 +238,14 @@ Settings displays total storage used and offers a clear-history action. Deleting
 a record removes its files and row together.
 
 ## 8. UI
+
+> **Superseded in part.** A design now exists at
+> `docs/design/2026-09-20-flow-board.md`, extracted from the claude.ai design project on
+> 2026-09-20. Where it disagrees with this section, **the design wins**; its §6 lists the
+> eight divergences. The largest: the result screen uses press-and-hold to reveal the
+> original rather than a draggable divider, and the input image is retained so both the
+> result and history screens can show INPUT alongside OUTPUT. That last point resolves the
+> open question about history having no "before".
 
 **Import** — photo picker, recent-history strip, and a 2x/4x selector showing
 resulting dimensions and approximate file size. This is where the memory clamp
