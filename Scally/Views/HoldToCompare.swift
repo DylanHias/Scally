@@ -14,7 +14,6 @@ struct HoldToCompare: View {
     @State private var showingOriginal = false
     @State private var zoom: CGFloat = 1
     @State private var committedZoom: CGFloat = 1
-    @State private var hasOpenedAtActualPixels = false
     @State private var offset: CGSize = .zero
     @State private var committedOffset: CGSize = .zero
 
@@ -59,7 +58,9 @@ struct HoldToCompare: View {
                         }
                     }
                     Spacer()
-                    Text(showingOriginal ? "ORIGINAL" : "HOLD TO SEE ORIGINAL")
+                    Text(showingOriginal ? "ORIGINAL"
+                         : (zoom < 1.01 ? "TAP 100% TO SEE REAL PIXELS · HOLD FOR ORIGINAL"
+                                        : "HOLD TO SEE ORIGINAL"))
                         .font(Typography.sectionLabel)
                         .tracking(0.9)
                         .foregroundStyle(.white.opacity(showingOriginal ? 0.95 : 0.6))
@@ -74,7 +75,7 @@ struct HoldToCompare: View {
             } onPressingChanged: { pressing in
                 showingOriginal = pressing
             }
-            .onAppear { openAtActualPixels(viewport: geometry.size) }
+
         }
     }
 
@@ -118,13 +119,4 @@ struct HoldToCompare: View {
         }
     }
 
-    /// Opens at actual pixels rather than fit, so the result is visible without
-    /// the user having to discover a gesture first.
-    private func openAtActualPixels(viewport: CGSize) {
-        guard !hasOpenedAtActualPixels, after.size.width > 0 else { return }
-        hasOpenedAtActualPixels = true
-        let target = clamp(oneToOneZoom(viewport: viewport))
-        zoom = target
-        committedZoom = target
-    }
 }
