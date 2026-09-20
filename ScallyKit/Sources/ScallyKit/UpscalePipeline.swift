@@ -1,9 +1,9 @@
 import Foundation
 import Accelerate
 
-public struct UpscaleResult: Sendable, Identifiable, Equatable {
-    /// `navigationDestination(item:)` needs Identifiable; observable state that
-    /// wraps this needs Equatable.
+public struct UpscaleResult: Sendable, Identifiable, Hashable {
+    /// `navigationDestination(item:)` needs Identifiable and Hashable; observable
+    /// state that wraps this needs Equatable, which Hashable implies.
     public var id: URL { outputURL }
 
     public let outputURL: URL

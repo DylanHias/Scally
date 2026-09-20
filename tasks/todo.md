@@ -56,15 +56,23 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
       added for the multi-select history the design specifies.
 
 ## Phase 7 — User interface
-- [ ] **Task 16** — Import screen and scale configuration
-- [ ] **Task 17** — Processing screen
-- [ ] **Task 18** — Before/after comparison with zoom
-- [ ] **Task 19** — Save to Photos and library persistence
-- [ ] **Task 20** — History
-- [ ] **Task 21** — Settings and licenses
+All six built against `docs/design/2026-09-20-flow-board.md`, both themes.
+Import is visually verified on the simulator in light and dark; the rest compile
+and are unit-tested but have NOT been walked through on screen yet.
+- [x] **Task 16** — Import screen and scale configuration — 9 model tests, **1 fix round**
+      (wordmark was crushed to "S..." inside an iOS 26 toolbar glass capsule; moved
+      into the content as a real header). Configure is inline on the photo per the design.
+- [x] **Task 17** — Processing screen — **1 fix round** (weak self captured inside the
+      @Sendable progress closure; the type is @MainActor and so already Sendable)
+- [x] **Task 18** — Press-and-hold comparison with pinch zoom — design replaced the
+      draggable divider, which also removed the divider-vs-pan gesture conflict
+- [x] **Task 19** — Save to Photos and library persistence
+- [x] **Task 20** — History with multi-select, batch share and delete, confirm dialogs
+- [x] **Task 21** — Settings with appearance, storage, and the Licenses screen the
+      design omits but BSD-3-Clause requires
+
 ## Phase 8 — Device validation
 - [ ] **Task 22** — Device matrix and performance verification
-
 ## Notes
 
 **Needs Dylan before the relevant task:**
