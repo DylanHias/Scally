@@ -57,11 +57,19 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
 
 ## Phase 7 — User interface
 All six built against `docs/design/2026-09-20-flow-board.md`, both themes.
-Import is visually verified on the simulator in light and dark; the rest compile
-and are unit-tested but have NOT been walked through on screen yet.
-- [x] **Task 16** — Import screen and scale configuration — 9 model tests, **1 fix round**
-      (wordmark was crushed to "S..." inside an iOS 26 toolbar glass capsule; moved
-      into the content as a real header). Configure is inline on the photo per the design.
+Import and Configure are verified on real hardware. Processing, Result, History and
+Settings compile and are unit-tested but have NOT been exercised on screen yet.
+- [x] **Task 16** — Import screen and scale configuration — 12 model tests, **3 fix rounds**
+      1. Wordmark crushed to "S..." inside an iOS 26 toolbar glass capsule; moved into
+         the content as a real header.
+      2. **Device-only blanking bug.** Resetting the picker's `selection` to nil
+         re-fired onChange with a nil item; the second pass assigned nil into `pending`,
+         wiping the photo one frame after Configure appeared. Root-caused from the device
+         console after two other hypotheses were tested and refuted. Now guarded, with
+         `PendingImage.resolve` making the invariant explicit and testable.
+      3. Selected scale segment rendered as an empty pill - the default button style
+         repaints the label with its own tint, so `.buttonStyle(.plain)` is required.
+      Confirmed working on device 2026-09-20: photo loads and Configure renders.
 - [x] **Task 17** — Processing screen — **1 fix round** (weak self captured inside the
       @Sendable progress closure; the type is @MainActor and so already Sendable)
 - [x] **Task 18** — Press-and-hold comparison with pinch zoom — design replaced the
