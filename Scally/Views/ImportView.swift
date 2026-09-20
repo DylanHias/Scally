@@ -32,7 +32,12 @@ struct ImportView: View {
             .fileImporter(isPresented: $showingFiles,
                           allowedContentTypes: [.image]) { handleFileImport($0) }
             .onChange(of: selection) { _, item in
-                Task { pending = await PendingImage.load(from: item); selection = nil }
+                guard let item else { return }
+                Task {
+                    let loaded = await PendingImage.load(from: item)
+                    selection = nil
+                    pending = PendingImage.resolve(current: pending, loaded: loaded)
+                }
             }
         }
     }

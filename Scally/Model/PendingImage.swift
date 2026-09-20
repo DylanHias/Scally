@@ -1,6 +1,7 @@
 import SwiftUI
 import PhotosUI
 
+
 /// A photo the user picked, written to a file the pipeline can read.
 ///
 /// `PhotosPickerItem` yields data, not a URL, and the pipeline reads from disk,
@@ -19,8 +20,21 @@ struct PendingImage: Identifiable, Hashable {
     static func == (lhs: PendingImage, rhs: PendingImage) -> Bool { lhs.id == rhs.id }
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
 
+    /// Applies the outcome of a picker load.
+    ///
+    /// A nil item or a failed decode must never clear an image that is already
+    /// staged. Resetting `selection` back to nil re-fires the picker's onChange
+    /// with a nil item, and assigning that result straight into state wiped the
+    /// staged photo one frame after Configure appeared - the screen showed its
+    /// title and nothing else.
+    static func resolve(current: PendingImage?, loaded: PendingImage?) -> PendingImage? {
+        loaded ?? current
+    }
+
     static func load(from item: PhotosPickerItem?) async -> PendingImage? {
-        guard let item, let data = try? await item.loadTransferable(type: Data.self) else { return nil }
+        guard let item, let data = try? await item.loadTransferable(type: Data.self) else {
+            return nil
+        }
         let name = item.supportedContentTypes.first?.preferredFilenameExtension.map {
             "IMG_\(Int.random(in: 1000...9999)).\($0.uppercased())"
         } ?? "IMG.JPG"
@@ -34,9 +48,10 @@ struct PendingImage: Identifiable, Hashable {
             .appending(path: "input-\(UUID().uuidString).\(ext.isEmpty ? "img" : ext)")
         guard (try? data.write(to: url)) != nil else { return nil }
 
+        let preview = downsampled(image, maxPixel: 1400)
         return PendingImage(
             url: url,
-            preview: downsampled(image, maxPixel: 1400),
+            preview: preview,
             width: Int(image.size.width * image.scale),
             height: Int(image.size.height * image.scale),
             byteCount: data.count,

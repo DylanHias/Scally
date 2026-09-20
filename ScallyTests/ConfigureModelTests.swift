@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import UIKit
 @testable import Scally
 @testable import ScallyKit
 
@@ -66,4 +67,29 @@ private let generous = MemoryBudget(availableBytes: 4_000_000_000)
 @Test func estimatedFileSizeGrowsWithScale() {
     let model = ConfigureModel(inputWidth: 500, inputHeight: 500, budget: generous)
     #expect(model.estimatedBytes(scale: 4) > model.estimatedBytes(scale: 2))
+}
+
+// MARK: - Picker selection state
+
+@Test func aSuccessfulLoadReplacesWhateverWasStaged() {
+    let loaded = PendingImage.make(from: onePixelPNG(), filename: "IMG_1.PNG")
+    #expect(PendingImage.resolve(current: nil, loaded: loaded)?.id == loaded?.id)
+}
+
+@Test func aFailedLoadNeverClearsTheStagedImage() {
+    // Resetting `selection` re-fires onChange with a nil item; that second pass
+    // must not wipe the photo the first pass staged.
+    let staged = PendingImage.make(from: onePixelPNG(), filename: "IMG_1.PNG")
+    #expect(PendingImage.resolve(current: staged, loaded: nil)?.id == staged?.id)
+}
+
+@Test func aFailedLoadWithNothingStagedStaysEmpty() {
+    #expect(PendingImage.resolve(current: nil, loaded: nil) == nil)
+}
+
+private func onePixelPNG() -> Data {
+    UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).image { context in
+        UIColor.red.setFill()
+        context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+    }.pngData()!
 }

@@ -60,6 +60,10 @@ struct ConfigureView: View {
                                 .fill(scale == candidate ? Palette.primaryText : .clear)
                         )
                 }
+                // .plain is required: the default button style repaints the
+                // label with its own tint, which made the selected segment's
+                // text vanish against its own fill.
+                .buttonStyle(.plain)
                 .disabled(!available)
             }
         }
