@@ -2475,6 +2475,16 @@ git commit -m "feat: add app target, SwiftData record and library store"
 
 ## Phase 7 — User interface
 
+> **Read `docs/design/2026-09-20-flow-board.md` before starting any task in this phase.**
+> A real design landed on 2026-09-20 and supersedes the screens sketched below. Tasks 16,
+> 18, 20 and 21 as written do not match it. Specifically: configure is inline on the photo
+> rather than a sheet; the result screen is press-and-hold to reveal the original, not a
+> draggable divider; history is a multi-select list with batch share and delete, not a
+> grid; settings gains Appearance and Save location; and three edge-case screens (memory
+> clamp, library denied, save failed) are designed and in scope. The code below is still
+> correct for the parts the design does not touch - keep the view models and their tests,
+> replace the view bodies.
+
 ### Task 16: Import screen and scale configuration
 
 **Files:**
@@ -3700,6 +3710,7 @@ git commit -m "docs: record device test matrix results"
 ## Open items for the human
 
 1. **Deployment target** — set provisionally to iOS 18.0 in Global Constraints. Confirm or change before Task 15.
-2. **History comparison** — a saved record has no stored "before". Either accept result-only viewing in history (default) or store a downscaled input copy in Task 15. Decide before Task 20.
-3. **App display name and icon** — "Scally" is taken from the directory name. No icon is specified anywhere in this plan.
+2. ~~**History comparison**~~ — **resolved by the design, 2026-09-20.** The input is retained; result and history both show INPUT alongside OUTPUT, and press-and-hold compares against the real original. Task 15 must store a copy of the source.
+3. ~~**App display name and icon**~~ — **resolved by the design, 2026-09-20.** Name "Scally", subtitle "ON-DEVICE UPSCALER". Icon is a viewfinder closing on an amber pixel, built from squares to survive at 29px, plus a 2.2 s cold-start animation. See the design reference §5.
 4. **Fixture images for Task 14** — three are needed, and their licensing matters if they ship inside the test bundle. Use your own photographs.
+5. **The design omits a Licenses row in Settings**, which BSD-3-Clause requires (spec §2). Proceeding by adding it beneath `Save location` unless Dylan says otherwise.
