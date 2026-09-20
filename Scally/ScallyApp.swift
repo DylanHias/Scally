@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct ScallyApp: App {
@@ -6,6 +7,7 @@ struct ScallyApp: App {
         WindowGroup {
             PlaceholderView()
         }
+        .modelContainer(for: UpscaleRecord.self)
     }
 }
 

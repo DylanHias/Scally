@@ -49,7 +49,11 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
       passed and hid it). References inspected visually before committing.
 
 ## Phase 6 — App data layer
-- [ ] **Task 15** — App target, SwiftData record, library store
+- [x] **Task 15** — App target, SwiftData record, library store — 9 tests, no fix rounds
+      Extended past the plan to retain the input image, per the design: the record
+      carries input and output dimensions and byte counts, and the store keeps a copy
+      of the source so press-and-hold compares against the real original. Batch delete
+      added for the multi-select history the design specifies.
 
 ## Phase 7 — User interface
 - [ ] **Task 16** — Import screen and scale configuration
