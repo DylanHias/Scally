@@ -103,6 +103,27 @@ Processing.
       **Still outstanding:** a genuinely old device. The memory clamp has never
       fired on real hardware - a 17 Pro grants 4x on everything - so that path
       remains unverified outside tests.
+## Engine
+
+**One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),
+118.6M parameters, FP16. Real-ESRGAN was removed on Dylan's instruction.
+
+The VQ encoder, the single denoising step and the VQ decoder are fused into one
+Core ML graph together with the prior sample and the `_scale_input`
+normalisation. Only the 4x resample stays in Swift, because coremltools has no
+`upsample_bicubic2d`.
+
+FP16 throughout, justified by measurement rather than assumed: the fused model
+sits 5.19% of range from the PyTorch reference, while the model's own
+stochasticity moves the output by 67.64% - roughly 25x more. Chasing FP32
+determinism would be measuring noise.
+
+**Non-commercial licence.** ResShift is S-Lab 1.0, RSD is CC BY-NC-SA 4.0. The
+Licenses screen reproduces both. Scally is free permanently.
+
+**The model is gitignored** (334 MB). `tools/convert_fused.py` regenerates it.
+Shipping needs on-demand resources or a first-launch download.
+
 ## Notes
 
 **Needs Dylan before the relevant task:**

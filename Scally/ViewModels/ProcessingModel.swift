@@ -28,7 +28,7 @@ final class ProcessingModel {
         elapsedAtLastSample = elapsed
     }
 
-    func start(source: URL, scale: Int, engine: UpscaleEngine = .fast) {
+    func start(source: URL, scale: Int) {
         guard case .idle = state else { return }
         state = .running
         let started = Date()
@@ -40,7 +40,7 @@ final class ProcessingModel {
         task = Task { [self] in
             do {
                 let pipeline = UpscalePipeline(
-                    upscaler: try engine.makeUpscaler(),
+                    upscaler: try ResShiftUpscaler(),
                     faceRestorer: NoopFaceRestorer(),
                     scratchDirectory: FileManager.default.urls(for: .cachesDirectory,
                                                                in: .userDomainMask)[0]

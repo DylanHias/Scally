@@ -33,7 +33,7 @@ private func writeFixture(width: Int, height: Int) throws -> URL {
 }
 
 private func makePipeline() throws -> UpscalePipeline {
-    UpscalePipeline(upscaler: try CoreMLUpscaler(), faceRestorer: NoopFaceRestorer())
+    UpscalePipeline(upscaler: try ResShiftUpscaler(computeUnits: .cpuAndGPU), faceRestorer: NoopFaceRestorer())
 }
 
 @Test func pipelineProducesAnOutputFourTimesLarger() async throws {
@@ -77,7 +77,7 @@ private func makePipeline() throws -> UpscalePipeline {
     defer { try? FileManager.default.removeItem(at: scratch) }
 
     let source = try writeFixture(width: 900, height: 700)
-    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(),
+    let pipeline = UpscalePipeline(upscaler: try ResShiftUpscaler(computeUnits: .cpuAndGPU),
                                    faceRestorer: NoopFaceRestorer(),
                                    scratchDirectory: scratch)
 
@@ -97,7 +97,7 @@ private func makePipeline() throws -> UpscalePipeline {
     defer { try? FileManager.default.removeItem(at: scratch) }
 
     let source = try writeFixture(width: 200, height: 150)
-    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(),
+    let pipeline = UpscalePipeline(upscaler: try ResShiftUpscaler(computeUnits: .cpuAndGPU),
                                    faceRestorer: NoopFaceRestorer(),
                                    scratchDirectory: scratch)
     let result = try await pipeline.run(source: source, requestedScale: 2,
@@ -111,7 +111,7 @@ private func makePipeline() throws -> UpscalePipeline {
 @Test func aTightBudgetClampsTheAppliedScale() async throws {
     let source = try writeFixture(width: 400, height: 400)
     // 400x400 at 4x is 10.2MB; the 0.6 safety factor makes 12MB allow 2x only.
-    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(),
+    let pipeline = UpscalePipeline(upscaler: try ResShiftUpscaler(computeUnits: .cpuAndGPU),
                                    faceRestorer: NoopFaceRestorer(),
                                    budget: MemoryBudget(availableBytes: 5_000_000))
     let result = try await pipeline.run(source: source, requestedScale: 4) { _ in }
@@ -124,7 +124,7 @@ private func makePipeline() throws -> UpscalePipeline {
 
 @Test func anImpossibleBudgetThrowsRatherThanRunning() async throws {
     let source = try writeFixture(width: 400, height: 400)
-    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(),
+    let pipeline = UpscalePipeline(upscaler: try ResShiftUpscaler(computeUnits: .cpuAndGPU),
                                    faceRestorer: NoopFaceRestorer(),
                                    budget: MemoryBudget(availableBytes: 1000))
     await #expect(throws: UpscaleError.self) {
