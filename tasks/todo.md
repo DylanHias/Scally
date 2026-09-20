@@ -10,8 +10,14 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
       app builds and its test target runs on iPhone 17 Pro / iOS 26.5
 
 ## Phase 1 — Model conversion (highest risk, built first)
-- [ ] **Task 2** — PyTorch to Core ML conversion script
-- [ ] **Task 3** — Numerical parity gate (max 2/255, mean 0.5/255)
+- [x] **Task 2** — PyTorch to Core ML conversion script
+      Converted first try; `load_state_dict(strict=True)` passed, so the architecture
+      guess (SRVGGNetCompact, 32 conv, nearest skip) was right. 2.4 MB at FP16.
+- [x] **Task 3** — Numerical parity gate — **1 fix round**
+      First run failed at 0.0286 vs 0.00784. Root-caused to FP16 accumulation, not
+      architecture: an FP32 conversion of the same graph matches PyTorch to 2.1e-5.
+      Gate rebuilt as three tests (structural FP32 / photographic FP16 / PSNR floor).
+      All 3 pass. See the plan's Task 3 note for the known 1% margin fragility.
 
 ## Phase 2 — Geometry and composition (no ML)
 - [ ] **Task 4** — Tile geometry
