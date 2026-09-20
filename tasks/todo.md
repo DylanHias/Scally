@@ -20,10 +20,12 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
       All 3 pass. See the plan's Task 3 note for the known 1% margin fragility.
 
 ## Phase 2 — Geometry and composition (no ML)
-- [ ] **Task 4** — Tile geometry
-- [ ] **Task 5** — Memory-mapped pixel buffer
-- [ ] **Task 6** — Ramp-blended tile composer
-- [ ] **Task 7** — Upscaler/FaceRestorer protocols + reconstruction proof
+- [x] **Task 4** — Tile geometry — 6 tests, no fix rounds
+- [x] **Task 5** — Memory-mapped pixel buffer — 5 tests, no fix rounds
+- [x] **Task 6** — Ramp-blended tile composer — 5 tests, no fix rounds
+- [x] **Task 7** — Upscaler/FaceRestorer protocols + reconstruction proof — 3 tests
+      (one parameterised over 5 awkward sizes), no fix rounds. Tiled reconstruction
+      is byte-exact at 700x500, 100x80, 256x256, 257x257, 1000x13 and 13x1000.
 
 ## Phase 3 — Image input and output
 - [ ] **Task 8** — Loading, EXIF orientation, sRGB conversion
