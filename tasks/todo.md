@@ -97,8 +97,14 @@ Task 1 complete. Scaffolding verified end to end on 2026-09-20: `swift test` in 
 runs 2 tests green, `xcodebuild build` and `xcodebuild test` both succeed against
 iPhone 17 Pro / iOS 26.5, with 1 test executed in the app target.
 
-**Known limitation:** `CODE_SIGNING_ALLOWED: NO` and an empty `DEVELOPMENT_TEAM`, so the
-project builds for simulator only. Device builds need a team set in `project.yml`.
+~~**Known limitation:** simulator only.~~ Resolved 2026-09-20: `DEVELOPMENT_TEAM`
+is `UQRXPYHMJ9` (read from the installed provisioning profiles, same team as Listn)
+and signing is enabled. Built, signed and installed to Dylan's iPhone 17 Pro
+(`3F380110-D711-5C7B-9725-2656FCB16BD6`) with automatic provisioning.
+
+**Device build:**
+`xcodebuild -project Scally.xcodeproj -scheme Scally -destination 'platform=iOS,id=<device-id>' -allowProvisioningUpdates build`
+then `xcrun devicectl device install app --device <device-id> <path-to-Scally.app>`
 
 **Build commands:**
 - Package tests: `cd ScallyKit && swift test`
