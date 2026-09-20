@@ -5,6 +5,7 @@ struct ProcessingView: View {
     let pending: PendingImage
     let scale: Int
 
+    @AppStorage("engine") private var engine = UpscaleEngine.fast.rawValue
     @State private var model = ProcessingModel()
     @Environment(\.dismiss) private var dismiss
 
@@ -51,7 +52,8 @@ struct ProcessingView: View {
         .task {
             UIApplication.shared.isIdleTimerDisabled = true
             defer { UIApplication.shared.isIdleTimerDisabled = false }
-            model.start(source: pending.url, scale: scale)
+            model.start(source: pending.url, scale: scale,
+                        engine: UpscaleEngine(rawValue: engine) ?? .fast)
         }
         .navigationDestination(item: finished) { result in
             ResultView(pending: pending, result: result)
@@ -60,7 +62,7 @@ struct ProcessingView: View {
 
     private var readout: some View {
         VStack(spacing: 10) {
-            FieldLabel("UPSCALING · \(scale)×")
+            FieldLabel("UPSCALING · \(scale)× · \((UpscaleEngine(rawValue: engine) ?? .fast).title.uppercased())")
             Text("\(Int(model.progress * 100))%")
                 .font(Typography.metricLarge)
                 .foregroundStyle(Palette.primaryText)

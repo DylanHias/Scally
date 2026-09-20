@@ -6,6 +6,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var records: [UpscaleRecord]
     @AppStorage("appearance") private var appearance = "system"
+    @AppStorage("engine") private var engine = UpscaleEngine.fast.rawValue
 
     @State private var confirmingClear = false
     @State private var storedBytes = 0
@@ -25,6 +26,17 @@ struct SettingsView: View {
                     }
                     Button("Clear history", role: .destructive) { confirmingClear = true }
                         .disabled(records.isEmpty)
+                }
+
+                Section {
+                    Picker("Engine", selection: $engine) {
+                        ForEach(UpscaleEngine.allCases) { option in
+                            Text(option.title).tag(option.rawValue)
+                        }
+                    }
+                } footer: {
+                    Text((UpscaleEngine(rawValue: engine) ?? .fast).detail)
+                        .font(Typography.caption)
                 }
 
                 Section {

@@ -19,7 +19,16 @@ public protocol Upscaler: Sendable {
     /// Linear magnification factor applied to both axes.
     var scale: Int { get }
 
+    /// Input tile edge in pixels. The CNN takes 256 and emits 1024; the
+    /// diffusion model takes 64 and emits 256, because its UNet operates on a
+    /// 64x64 latent whose attention masks are baked in at that size.
+    var inputTileSize: Int { get }
+
     func upscale(tile: UnsafeRawPointer, width: Int, height: Int, bytesPerRow: Int) throws -> TilePixels
+}
+
+public extension Upscaler {
+    var inputTileSize: Int { 256 }
 }
 
 /// Copies its input unchanged. Exists so the tiler and composer can be proven

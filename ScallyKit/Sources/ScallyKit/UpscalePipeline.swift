@@ -36,7 +36,6 @@ public struct UpscalePipeline: Sendable {
     private let budget: MemoryBudget
     private let scratchDirectory: URL
     private let overlap = 16
-    private let tileSize = 256
 
     /// - Parameter scratchDirectory: where the memory-mapped working buffers
     ///   live. Per spec section 5 the app passes its Caches directory; these
@@ -79,7 +78,7 @@ public struct UpscalePipeline: Sendable {
                                            directory: scratchDirectory)
         let composer = TileComposer(buffer: buffer, overlap: overlap * modelScale)
         let grid = TileGrid(imageWidth: input.width, imageHeight: input.height,
-                            tileSize: tileSize, overlap: overlap)
+                            tileSize: upscaler.inputTileSize, overlap: overlap)
 
         for (index, tile) in grid.tiles.enumerated() {
             try Task.checkCancellation()
