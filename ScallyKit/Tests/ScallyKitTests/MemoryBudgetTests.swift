@@ -51,3 +51,20 @@ import Testing
     // Guards the platform shim: a zero budget would refuse every upscale.
     #expect(MemoryBudget.current().availableBytes > 0)
 }
+
+@Test func theRealBudgetAlwaysGrantsASmallUpscale() {
+    // The bug this covers: os_proc_available_memory() reports 0 on the
+    // simulator, so the real budget refused a 120x120 image outright. Whatever
+    // the platform reports, a thumbnail-sized upscale must always be possible.
+    let decision = MemoryBudget.current().resolveScale(requested: 4, inputWidth: 120, inputHeight: 120)
+    #expect(decision == .granted(scale: 4), "a 120x120 image was not granted: \(decision)")
+}
+
+@Test func animplausiblyLowReadingStillGrantsModestWork() {
+    // A genuinely tiny injected budget is still honoured - the floor applies to
+    // the platform reading, not to explicitly supplied budgets.
+    let injected = MemoryBudget(availableBytes: 1000)
+    if case .refused = injected.resolveScale(requested: 4, inputWidth: 4032, inputHeight: 3024) {} else {
+        Issue.record("an explicit tiny budget must still refuse large work")
+    }
+}

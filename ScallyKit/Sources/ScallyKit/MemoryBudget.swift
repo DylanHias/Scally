@@ -43,9 +43,17 @@ public struct MemoryBudget: Sendable {
     /// conservative fraction of physical memory stands in. The value only has
     /// to be sane there; the clamping logic itself is tested with an injected
     /// budget precisely so it never depends on this shim.
+    /// Below this we assume the reading is wrong rather than that the device
+    /// has no memory at all.
+    private static let implausibleFloor = 256 * 1024 * 1024
+
     public static func current() -> MemoryBudget {
         #if os(iOS)
-        return MemoryBudget(availableBytes: Int(os_proc_available_memory()))
+        // The simulator reports 0 here, which refused a 120x120 image outright.
+        // A bogus reading must not brick the app, so treat anything
+        // implausibly small as unknown and fall back to a conservative floor.
+        let reported = Int(os_proc_available_memory())
+        return MemoryBudget(availableBytes: max(reported, implausibleFloor))
         #else
         let physical = ProcessInfo.processInfo.physicalMemory
         return MemoryBudget(availableBytes: Int(physical / 4))

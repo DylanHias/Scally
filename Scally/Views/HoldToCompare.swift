@@ -14,6 +14,7 @@ struct HoldToCompare: View {
     @State private var showingOriginal = false
     @State private var zoom: CGFloat = 1
     @State private var committedZoom: CGFloat = 1
+    @State private var hasOpenedAtActualPixels = false
     @State private var offset: CGSize = .zero
     @State private var committedOffset: CGSize = .zero
 
@@ -49,7 +50,7 @@ struct HoldToCompare: View {
                 VStack {
                     HStack {
                         Spacer()
-                        Button(action: toggleOneToOne) {
+                        Button { toggleOneToOne(viewport: geometry.size) } label: {
                             Text(zoomLabel(viewport: geometry.size))
                                 .font(Typography.badge)
                                 .foregroundStyle(.white)
@@ -73,27 +74,57 @@ struct HoldToCompare: View {
             } onPressingChanged: { pressing in
                 showingOriginal = pressing
             }
+            .onAppear { openAtActualPixels(viewport: geometry.size) }
         }
     }
 
     private func clamp(_ value: CGFloat) -> CGFloat { min(max(value, 1), maximumZoom) }
 
+    /// Fit-to-frame scale for the output image, in points per image point.
+    private func fitScale(viewport: CGSize) -> CGFloat {
+        guard after.size.width > 0, after.size.height > 0 else { return 1 }
+        return min(viewport.width / after.size.width, viewport.height / after.size.height)
+    }
+
+    /// The `zoom` multiplier at which one output pixel covers one device pixel.
+    ///
+    /// This is the whole point of the screen. Fitted to the frame, a 4x upscale
+    /// is arithmetically indistinguishable from its input - both carry more
+    /// pixels than the display area, so both resolve sharp and holding to
+    /// compare shows nothing. The difference only exists at actual pixels.
+    private func oneToOneZoom(viewport: CGSize) -> CGFloat {
+        let fit = fitScale(viewport: viewport)
+        guard fit > 0 else { return 1 }
+        return 1 / (fit * UIScreen.main.scale)
+    }
+
     /// Percentage of true 1:1, where one image pixel covers one device pixel.
     private func zoomLabel(viewport: CGSize) -> String {
-        let fit = min(viewport.width / after.size.width, viewport.height / after.size.height)
-        let effective = fit * zoom * UIScreen.main.scale
+        let effective = fitScale(viewport: viewport) * zoom * UIScreen.main.scale
         return "\(Int((effective * 100).rounded()))%"
     }
 
-    private func toggleOneToOne() {
+    private func toggleOneToOne(viewport: CGSize) {
         withAnimation(.snappy) {
-            if committedZoom > 1.01 {
-                zoom = 1; committedZoom = 1
-                offset = .zero; committedOffset = .zero
+            let target = clamp(oneToOneZoom(viewport: viewport))
+            if abs(committedZoom - target) < 0.05 {
+                zoom = 1
             } else {
-                zoom = maximumZoom / 3
-                committedZoom = zoom
+                zoom = target
             }
+            committedZoom = zoom
+            offset = .zero
+            committedOffset = .zero
         }
+    }
+
+    /// Opens at actual pixels rather than fit, so the result is visible without
+    /// the user having to discover a gesture first.
+    private func openAtActualPixels(viewport: CGSize) {
+        guard !hasOpenedAtActualPixels, after.size.width > 0 else { return }
+        hasOpenedAtActualPixels = true
+        let target = clamp(oneToOneZoom(viewport: viewport))
+        zoom = target
+        committedZoom = target
     }
 }
