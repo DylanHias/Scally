@@ -26,6 +26,12 @@ targets:
     dependencies:
       - package: ScallyKit
         product: ScallyKit
+    entitlements:
+      path: Scally/Scally.entitlements
+      properties:
+        # Stable Diffusion-scale models exceed the default per-process limit;
+        # without this the UNet is killed by jetsam during load.
+        com.apple.developer.kernel.increased-memory-limit: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dh.Scally
@@ -46,6 +52,12 @@ targets:
       - target: Scally
       - package: ScallyKit
         product: ScallyKit
+    entitlements:
+      path: Scally/Scally.entitlements
+      properties:
+        # Stable Diffusion-scale models exceed the default per-process limit;
+        # without this the UNet is killed by jetsam during load.
+        com.apple.developer.kernel.increased-memory-limit: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dh.Scally.tests
