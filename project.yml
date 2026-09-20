@@ -1,0 +1,65 @@
+name: Scally
+options:
+  bundleIdPrefix: dh
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+packages:
+  ScallyKit:
+    path: ScallyKit
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  Scally:
+    type: application
+    platform: iOS
+    sources:
+      - path: Scally
+    dependencies:
+      - package: ScallyKit
+        product: ScallyKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dh.Scally
+        PRODUCT_NAME: Scally
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Scally
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription: "Scally saves your upscaled images to your photo library."
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        CODE_SIGNING_ALLOWED: NO
+
+  ScallyTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ScallyTests
+    dependencies:
+      - target: Scally
+      - package: ScallyKit
+        product: ScallyKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dh.Scally.tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  Scally:
+    build:
+      targets:
+        Scally: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - ScallyTests

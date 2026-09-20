@@ -5,7 +5,9 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
 **Legend:** `[x]` complete & reviewed · `[~]` in progress · `[ ]` not started
 
 ## Phase 0 — Foundation
-- [ ] **Task 1** — ScallyKit package skeleton and typed errors
+- [x] **Task 1** — ScallyKit package skeleton and typed errors
+      `3492bd0..HEAD` · 2 tests pass (Swift Testing) · project scaffolded with XcodeGen,
+      app builds and its test target runs on iPhone 17 Pro / iOS 26.5
 
 ## Phase 1 — Model conversion (highest risk, built first)
 - [ ] **Task 2** — PyTorch to Core ML conversion script
@@ -63,4 +65,14 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
 
 ## Review
 
-Not started. No code written as of 2026-09-20.
+Task 1 complete. Scaffolding verified end to end on 2026-09-20: `swift test` in ScallyKit
+runs 2 tests green, `xcodebuild build` and `xcodebuild test` both succeed against
+iPhone 17 Pro / iOS 26.5, with 1 test executed in the app target.
+
+**Known limitation:** `CODE_SIGNING_ALLOWED: NO` and an empty `DEVELOPMENT_TEAM`, so the
+project builds for simulator only. Device builds need a team set in `project.yml`.
+
+**Build commands:**
+- Package tests: `cd ScallyKit && swift test`
+- Regenerate project: `xcodegen generate`
+- App tests: `xcodebuild test -project Scally.xcodeproj -scheme Scally -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5'`
