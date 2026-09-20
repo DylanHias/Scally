@@ -28,17 +28,25 @@ Live progress for `docs/superpowers/plans/2026-09-20-scally-upscaler.md`. Branch
       is byte-exact at 700x500, 100x80, 256x256, 257x257, 1000x13 and 13x1000.
 
 ## Phase 3 — Image input and output
-- [ ] **Task 8** — Loading, EXIF orientation, sRGB conversion
-- [ ] **Task 9** — Alpha channel preservation
-- [ ] **Task 10** — Output encoding (HEIC/PNG)
+- [x] **Task 8** — Loading, EXIF orientation, sRGB conversion — 8 tests, **1 fix round**
+      (alpha detection changed from declared alphaInfo to an actual channel scan,
+      so opaque PNG screenshots route to HEIC rather than bloating to PNG)
+- [x] **Task 9** — Alpha channel preservation — 6 tests, no fix rounds
+- [x] **Task 10** — Output encoding (HEIC/PNG) — 6 tests, no fix rounds
 
 ## Phase 4 — Memory budget
-- [ ] **Task 11** — Budget calculation and scale clamping
+- [x] **Task 11** — Budget calculation and scale clamping — 8 tests, no fix rounds
 
 ## Phase 5 — Model integration
-- [ ] **Task 12** — Core ML upscaler with reflect padding
-- [ ] **Task 13** — UpscalePipeline, the sole public entry point
-- [ ] **Task 14** — Golden image regression tests
+- [x] **Task 12** — Core ML upscaler with reflect padding — 7 tests, no fix rounds
+- [x] **Task 13** — UpscalePipeline, the sole public entry point — 8 tests, **1 fix round**
+      (scratch directory made injectable: the cancellation test asserted on the shared
+      temp dir while Swift Testing ran tests in parallel; this also closed a spec gap,
+      since scratch belongs in Caches). Public surface narrowed: 35 declarations
+      internalised, leaving only the pipeline and its vocabulary public.
+- [x] **Task 14** — Golden image regression tests — 3 cases, **1 fix round**
+      (reference files were HEIC named .png; ImageIO sniffs content so the assertion
+      passed and hid it). References inspected visually before committing.
 
 ## Phase 6 — App data layer
 - [ ] **Task 15** — App target, SwiftData record, library store

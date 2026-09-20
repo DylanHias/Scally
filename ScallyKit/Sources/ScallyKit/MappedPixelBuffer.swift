@@ -10,17 +10,17 @@ import CoreGraphics
 /// The backing file is scratch storage and is deleted when this object
 /// deinitialises. It is not the final output, which `OutputWriter` encodes
 /// separately.
-public final class MappedPixelBuffer {
-    public let width: Int
-    public let height: Int
-    public let bytesPerRow: Int
-    public let fileURL: URL
-    public let baseAddress: UnsafeMutableRawPointer
+final class MappedPixelBuffer {
+    let width: Int
+    let height: Int
+    let bytesPerRow: Int
+    let fileURL: URL
+    let baseAddress: UnsafeMutableRawPointer
 
     private let descriptor: Int32
     private let byteCount: Int
 
-    public init(width: Int, height: Int, directory: URL) throws {
+    init(width: Int, height: Int, directory: URL) throws {
         precondition(width > 0 && height > 0, "buffer must have area")
         self.width = width
         self.height = height
@@ -61,7 +61,7 @@ public final class MappedPixelBuffer {
     ///
     /// The provider's release callback is intentionally empty: the mapping
     /// outlives the CGImage and is torn down in `deinit`.
-    public func makeCGImage() throws -> CGImage {
+    func makeCGImage() throws -> CGImage {
         guard let provider = CGDataProvider(
             dataInfo: nil,
             data: baseAddress,

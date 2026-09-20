@@ -7,8 +7,8 @@ import Accelerate
 /// screenshot with rounded corners or a PNG logo would come back with its
 /// transparency filled in as black if alpha were simply dropped. Alpha travels
 /// separately: extracted before inference, scaled with Lanczos, reapplied after.
-public enum AlphaChannel {
-    public static func extract(from pixels: [UInt8], width: Int, height: Int, bytesPerRow: Int) -> [UInt8] {
+enum AlphaChannel {
+    static func extract(from pixels: [UInt8], width: Int, height: Int, bytesPerRow: Int) -> [UInt8] {
         var alpha = [UInt8](repeating: 255, count: width * height)
         for y in 0..<height {
             let rowStart = y * bytesPerRow
@@ -20,7 +20,7 @@ public enum AlphaChannel {
     }
 
     /// Lanczos resampling of the single-channel alpha plane.
-    public static func scaled(_ alpha: [UInt8],
+    static func scaled(_ alpha: [UInt8],
                               from source: (width: Int, height: Int),
                               to destination: (width: Int, height: Int)) -> [UInt8] {
         var input = alpha
@@ -47,7 +47,7 @@ public enum AlphaChannel {
         return output
     }
 
-    public static func apply(_ alpha: [UInt8], to pixels: inout [UInt8],
+    static func apply(_ alpha: [UInt8], to pixels: inout [UInt8],
                              width: Int, height: Int, bytesPerRow: Int) {
         for y in 0..<height {
             let rowStart = y * bytesPerRow

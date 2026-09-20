@@ -8,11 +8,11 @@ import Foundation
 /// `dst = dst*(1-a) + src*a` yields an exact linear crossfade with no
 /// accumulator buffers - which matters, because accumulators at output
 /// resolution would reintroduce the memory problem this design exists to avoid.
-public struct TileComposer {
+struct TileComposer {
     private let buffer: MappedPixelBuffer
     private let overlap: Int
 
-    public init(buffer: MappedPixelBuffer, overlap: Int) {
+    init(buffer: MappedPixelBuffer, overlap: Int) {
         self.buffer = buffer
         self.overlap = overlap
     }
@@ -21,7 +21,7 @@ public struct TileComposer {
     ///
     /// Tiles must arrive in raster order for the crossfade to be correct;
     /// `TileGrid` guarantees that ordering.
-    public func write(tile: PixelRect, pixels: UnsafeRawPointer, bytesPerRow: Int) {
+    func write(tile: PixelRect, pixels: UnsafeRawPointer, bytesPerRow: Int) {
         let destination = buffer.baseAddress.assumingMemoryBound(to: UInt8.self)
         let source = pixels.assumingMemoryBound(to: UInt8.self)
 

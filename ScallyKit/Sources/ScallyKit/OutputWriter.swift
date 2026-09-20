@@ -2,18 +2,18 @@ import Foundation
 import ImageIO
 import UniformTypeIdentifiers
 
-public enum OutputWriter {
-    public enum Format: Sendable {
+enum OutputWriter {
+    enum Format: Sendable {
         case png
         case heic(quality: Double)
 
         /// HEIC's alpha handling is inconsistent and lossy edges on
         /// transparency look bad, so anything with alpha goes to PNG.
-        public static func preferred(hasAlpha: Bool) -> Format {
+        static func preferred(hasAlpha: Bool) -> Format {
             hasAlpha ? .png : .heic(quality: 0.92)
         }
 
-        public var isPNG: Bool { if case .png = self { return true } else { return false } }
+        var isPNG: Bool { if case .png = self { return true } else { return false } }
 
         var contentType: UTType {
             switch self {
@@ -22,7 +22,7 @@ public enum OutputWriter {
             }
         }
 
-        public var fileExtension: String { isPNG ? "png" : "heic" }
+        var fileExtension: String { isPNG ? "png" : "heic" }
     }
 
     /// Encodes the scratch buffer to a real image file.
@@ -30,7 +30,7 @@ public enum OutputWriter {
     /// Reading back through the mapping is sequential, which is the access
     /// pattern the pager handles best - memory stays flat even for very large
     /// outputs.
-    public static func write(buffer: MappedPixelBuffer, to url: URL, format: Format) throws {
+    static func write(buffer: MappedPixelBuffer, to url: URL, format: Format) throws {
         let image = try buffer.makeCGImage()
 
         guard let destination = CGImageDestinationCreateWithURL(

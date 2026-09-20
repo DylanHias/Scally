@@ -1,17 +1,17 @@
 import Foundation
 
-public struct PixelRect: Sendable, Equatable {
-    public var x: Int
-    public var y: Int
-    public var width: Int
-    public var height: Int
+struct PixelRect: Sendable, Equatable {
+    var x: Int
+    var y: Int
+    var width: Int
+    var height: Int
 
-    public init(x: Int, y: Int, width: Int, height: Int) {
+    init(x: Int, y: Int, width: Int, height: Int) {
         self.x = x; self.y = y; self.width = width; self.height = height
     }
 
     /// The same rect in an output image scaled by `scale`.
-    public func scaled(by scale: Int) -> PixelRect {
+    func scaled(by scale: Int) -> PixelRect {
         PixelRect(x: x * scale, y: y * scale, width: width * scale, height: height * scale)
     }
 }
@@ -23,14 +23,14 @@ public struct PixelRect: Sendable, Equatable {
 /// `TileComposer` relies on that regularity - and on the raster ordering - to
 /// crossfade without accumulator buffers, so do not change the stride without
 /// revisiting it.
-public struct TileGrid: Sendable {
-    public let imageWidth: Int
-    public let imageHeight: Int
-    public let tileSize: Int
-    public let overlap: Int
-    public let tiles: [PixelRect]
+struct TileGrid: Sendable {
+    let imageWidth: Int
+    let imageHeight: Int
+    let tileSize: Int
+    let overlap: Int
+    let tiles: [PixelRect]
 
-    public init(imageWidth: Int, imageHeight: Int, tileSize: Int, overlap: Int) {
+    init(imageWidth: Int, imageHeight: Int, tileSize: Int, overlap: Int) {
         precondition(tileSize > overlap * 2, "tile must be larger than twice its overlap")
         precondition(imageWidth > 0 && imageHeight > 0, "image must have area")
         self.imageWidth = imageWidth
