@@ -35,6 +35,7 @@ struct SettingsView: View {
                     }
                     LabeledContent("Save location", value: "Photos")
                     NavigationLink("Licenses") { LicensesView() }
+                    NavigationLink("Compare models") { CompareModelsView() }
                 }
 
                 Section {

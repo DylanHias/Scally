@@ -3,6 +3,7 @@
 Source weights: BSD-3-Clause, https://github.com/xinntao/Real-ESRGAN
 """
 import pathlib
+import re
 import requests
 import torch
 import torch.nn as nn
@@ -22,11 +23,22 @@ MODELS = {
         url="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-x4v3.pth",
         weights=ROOT / "tools" / "realesr-general-x4v3.pth",
         arch="srvgg",
+        product="GeneralX4v3",
     ),
     "x4plus": dict(
         url="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
         weights=ROOT / "tools" / "RealESRGAN_x4plus.pth",
         arch="rrdb",
+        product="RealESRGANx4",
+    ),
+    # Same RRDBNet 64nf23nb as x4plus - a pure weight swap - but fine-tuned
+    # from it on jpg/webp re-compression, realistic noise and lens blur.
+    # CC-BY-4.0, so commercial use stays available. Ships as safetensors.
+    "nomos": dict(
+        url="https://github.com/Phhofm/models/releases/download/4xNomosWebPhoto_esrgan/4xNomosWebPhoto_esrgan.safetensors",
+        weights=ROOT / "tools" / "4xNomosWebPhoto_esrgan.safetensors",
+        arch="rrdb",
+        product="NomosWebPhoto",
     ),
 }
 # Selected by argv when run as a script, by SCALLY_MODEL when imported (pytest
@@ -41,7 +53,7 @@ def _selected_model() -> str:
 MODEL = MODELS[_selected_model()]
 WEIGHTS_URL = MODEL["url"]
 WEIGHTS = MODEL["weights"]
-OUTPUT = ROOT / "ScallyKit/Sources/ScallyKit/Resources/RealESRGANx4.mlpackage"
+OUTPUT = ROOT / f"ScallyKit/Sources/ScallyKit/Resources/{MODEL['product']}.mlpackage"
 
 
 class SRVGGNetCompact(nn.Module):
@@ -133,10 +145,80 @@ def download_weights():
     WEIGHTS.write_bytes(response.content)
 
 
+def remap_old_esrgan(state):
+    """Old ESRGAN naming (model.0, model.1.sub.N.RDB...) -> BasicSR RRDBNet.
+
+    Community fine-tunes are usually published in the original ESRGAN layout:
+        model.0                  -> conv_first
+        model.1.sub.{0..22}      -> body.{i}       (the RRDB blocks)
+        model.1.sub.23           -> conv_body      (the trunk conv)
+        model.3 / 6 / 8 / 10     -> conv_up1 / conv_up2 / conv_hr / conv_last
+    """
+    import re
+    if not any(k.startswith("model.") for k in state):
+        return state
+    tail = {"3": "conv_up1", "6": "conv_up2", "8": "conv_hr", "10": "conv_last"}
+    out = {}
+    for key, value in state.items():
+        if key.startswith("model.0."):
+            out["conv_first." + key.split(".", 2)[2]] = value
+        elif key.startswith("model.1.sub.23."):
+            out["conv_body." + key.split(".", 4)[4]] = value
+        elif key.startswith("model.1.sub."):
+            m = re.match(r"model\.1\.sub\.(\d+)\.RDB(\d)\.conv(\d)\.0\.(weight|bias)", key)
+            if not m:
+                raise KeyError(f"unrecognised block key {key}")
+            block, rdb, conv, kind = m.groups()
+            out[f"body.{block}.rdb{rdb}.conv{conv}.{kind}"] = value
+        else:
+            m = re.match(r"model\.(\d+)\.(weight|bias)", key)
+            if not m or m.group(1) not in tail:
+                raise KeyError(f"unrecognised key {key}")
+            out[f"{tail[m.group(1)]}.{m.group(2)}"] = value
+    return out
+
+
+def remap_old_esrgan(state):
+    """Old ESRGAN naming (model.0, model.1.sub.N.RDB...) -> BasicSR RRDBNet.
+
+        model.0              -> conv_first
+        model.1.sub.{0..22}  -> body.{i}     (the RRDB blocks)
+        model.1.sub.23       -> conv_body    (the trunk conv)
+        model.3/6/8/10       -> conv_up1 / conv_up2 / conv_hr / conv_last
+    """
+    if not any(k.startswith("model.") for k in state):
+        return state
+    tail = {"3": "conv_up1", "6": "conv_up2", "8": "conv_hr", "10": "conv_last"}
+    out = {}
+    for key, value in state.items():
+        if key.startswith("model.0."):
+            out["conv_first." + key.split(".", 2)[2]] = value
+        elif key.startswith("model.1.sub.23."):
+            out["conv_body." + key.split(".", 4)[4]] = value
+        elif key.startswith("model.1.sub."):
+            m = re.match(r"model\.1\.sub\.(\d+)\.RDB(\d)\.conv(\d)\.0\.(weight|bias)", key)
+            if not m:
+                raise KeyError(f"unrecognised block key {key}")
+            b, rdb, conv, kind = m.groups()
+            out[f"body.{b}.rdb{rdb}.conv{conv}.{kind}"] = value
+        else:
+            m = re.match(r"model\.(\d+)\.(weight|bias)", key)
+            if not m or m.group(1) not in tail:
+                raise KeyError(f"unrecognised key {key}")
+            out[f"{tail[m.group(1)]}.{m.group(2)}"] = value
+    return out
+
+
 def load_model():
     download_weights()
-    state = torch.load(WEIGHTS, map_location="cpu", weights_only=True)
+    if WEIGHTS.suffix == ".safetensors":
+        from safetensors.torch import load_file
+        state = load_file(str(WEIGHTS))
+    else:
+        state = torch.load(WEIGHTS, map_location="cpu", weights_only=True)
     weights = state.get("params") or state.get("params_ema") or state
+    weights = remap_old_esrgan(weights)
+    weights = remap_old_esrgan(weights)
     model = SRVGGNetCompact() if MODEL["arch"] == "srvgg" else RRDBNet()
     model.load_state_dict(weights, strict=True)
     model.eval()
