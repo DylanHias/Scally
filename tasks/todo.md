@@ -103,6 +103,46 @@ Processing.
       **Still outstanding:** a genuinely old device. The memory clamp has never
       fired on real hardware - a 17 Pro grants 4x on everything - so that path
       remains unverified outside tests.
+## Phase 9 — Identity and design conformance (2026-09-21)
+The design's §5 had never been built at all: there was no asset catalog in the
+repo, so the app wore the default white iOS icon, and `UILaunchScreen_Generation`
+gave it a blank launch screen.
+- [x] **Task 23** — App icon
+      `tools/make_icon.py` draws the mark the design specifies - a viewfinder of
+      four three-square brackets closing on one amber pixel - and bakes
+      `Scally/Assets.xcassets/AppIcon.appiconset/AppIcon.png`. Checked at 180,
+      120, 87, 58 and 29 px: the smallest element still reads at 29.
+      `ASSETCATALOG_COMPILER_APPICON_NAME` added to project.yml; verified in the
+      built bundle's `CFBundleIcons`.
+- [x] **Task 24** — Launch animation
+      `LaunchView.swift`, on the design's score: brackets 50% open, closed by
+      0.70 s with the amber pixel landing, hold, then opening past the screen
+      edge by 2.20 s. The exit spread is solved from the screen size rather than
+      hardcoded, so the brackets clear a small phone as well as a large one.
+      `AppReadiness` is a reference type on purpose - a `let` copied into the
+      running task would never see the flag flip. Import is not in the view
+      hierarchy until the mark has left.
+- [x] **Task 25** — Four screens brought back to the flow board — **1 fix round**
+      1. Settings was a stock grouped `List`, bringing its own background,
+         separators and type. Rebuilt on the app's own cards and tokens.
+      2. History showed a bare `09:38` where the design specifies the date group
+         `TODAY 09:38` / `TUE 18:02` / `12 SEP`.
+      3. Import's trust panel said `NEURAL ENGINE`; the design names the
+         silicon. `DeviceChip` reads it from the hardware and falls back to the
+         plain claim rather than guessing.
+      4. Processing rendered `ELAPSED 3.4 S` as one run of caption text, losing
+         the label/value type distinction and uppercasing the unit.
+      **Fix round:** the long date form truncated to `YESTER…` and wrapped the
+      dimension summary onto two lines. Found by looking at the screen, not by
+      a test. `YESTERDAY` dropped (the design has no such label and the weekday
+      form already covers it) and the date column pinned with `.fixedSize()` so
+      the filename gives way instead.
+
+**Verified on screen 2026-09-21** in the iPhone 17 Pro simulator with seeded
+data: launch mark plays and hands over to Import, Settings, History. Built,
+signed and installed to Dylan's iPhone 17 Pro. The icon on the home screen and
+the `NEURAL · A19 PRO` chip label are device-only and unverified by me.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),

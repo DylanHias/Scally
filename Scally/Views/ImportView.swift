@@ -212,7 +212,7 @@ private struct TrustPanel: View {
     var body: some View {
         VStack(spacing: 14) {
             HStack(alignment: .top, spacing: 0) {
-                column(label: "ENGINE", value: "NEURAL ENGINE")
+                column(label: "ENGINE", value: DeviceChip.engineLabel)
                 column(label: "NETWORK", value: "NOT USED")
             }
             if storedBytes > 0 {
@@ -241,7 +241,58 @@ private struct TrustPanel: View {
     }
 }
 
+/// The design's trust panel names the silicon - `NEURAL · A17 PRO` - because
+/// "neural engine" alone tells someone nothing about the machine in their hand.
+/// Read from the hardware rather than hardcoded, so it stays true on the next
+/// phone; anything unrecognised falls back to the plain claim rather than
+/// guessing at a chip.
+enum DeviceChip {
+    static var engineLabel: String {
+        guard let chip else { return "NEURAL ENGINE" }
+        return "NEURAL · \(chip)"
+    }
+
+    static let chip: String? = {
+        var system = utsname()
+        uname(&system)
+        let identifier = withUnsafeBytes(of: &system.machine) { raw in
+            String(cString: raw.baseAddress!.assumingMemoryBound(to: CChar.self))
+        }
+        return chips[identifier]
+    }()
+
+    private static let chips: [String: String] = [
+        "iPhone11,2": "A12", "iPhone11,4": "A12", "iPhone11,6": "A12", "iPhone11,8": "A12",
+        "iPhone12,1": "A13", "iPhone12,3": "A13", "iPhone12,5": "A13", "iPhone12,8": "A13",
+        "iPhone13,1": "A14", "iPhone13,2": "A14", "iPhone13,3": "A14", "iPhone13,4": "A14",
+        "iPhone14,2": "A15", "iPhone14,3": "A15", "iPhone14,4": "A15", "iPhone14,5": "A15",
+        "iPhone14,6": "A15", "iPhone14,7": "A15", "iPhone14,8": "A15",
+        "iPhone15,2": "A16", "iPhone15,3": "A16", "iPhone15,4": "A16", "iPhone15,5": "A16",
+        "iPhone16,1": "A17 PRO", "iPhone16,2": "A17 PRO",
+        "iPhone17,1": "A18 PRO", "iPhone17,2": "A18 PRO",
+        "iPhone17,3": "A18", "iPhone17,4": "A18", "iPhone17,5": "A18",
+        "iPhone18,1": "A19 PRO", "iPhone18,2": "A19 PRO",
+        "iPhone18,3": "A19", "iPhone18,4": "A19 PRO",
+    ]
+}
+
 enum RelativeDate {
+    /// The History form: `TODAY 09:38`, `TUE 18:02`, `12 SEP`. A result from
+    /// this morning and one from last Tuesday must not both read as a bare
+    /// time, which is why History does not reuse `short`.
+    static func long(_ date: Date) -> String {
+        let calendar = Calendar.current
+        let time = date.formatted(date: .omitted, time: .shortened)
+        if calendar.isDateInToday(date) { return "TODAY \(time)" }
+        // No YESTERDAY case: it is the longest label of the set and it forced
+        // the row to truncate, while the weekday form already covers the day
+        // before. The design only ever shows TODAY, a weekday, or a date.
+        if let days = calendar.dateComponents([.day], from: date, to: .now).day, days < 7 {
+            return "\(date.formatted(.dateTime.weekday(.abbreviated)).uppercased()) \(time)"
+        }
+        return date.formatted(.dateTime.day().month(.abbreviated)).uppercased()
+    }
+
     static func short(_ date: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(date) {

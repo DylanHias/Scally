@@ -76,17 +76,35 @@ struct ProcessingView: View {
 
     private var metrics: some View {
         VStack(spacing: 12) {
-            HStack {
-                FieldLabel("ELAPSED \(String(format: "%.1f", model.elapsed)) S")
+            // Two readouts, each a caption over a monospaced value, as the
+            // design draws them. They were one run of uppercase caption text,
+            // which lost the type distinction the rest of the app keeps
+            // between a field's name and its number - and uppercased the unit
+            // into `3.4 S`, where the design writes `3.4 s`.
+            HStack(alignment: .top) {
+                readout(label: "ELAPSED", value: String(format: "%.1f s", model.elapsed))
                 Spacer()
                 if let remaining = model.estimatedRemaining {
-                    FieldLabel("REMAINING ~\(String(format: "%.1f", remaining)) S")
+                    readout(label: "REMAINING",
+                            value: String(format: "~%.1f s", remaining),
+                            alignment: .trailing)
                 }
             }
             MetricRow(label: "OUTPUT",
                       value: "\(pending.width * scale) × \(pending.height * scale) px")
         }
         .padding(.horizontal, Metrics.gutter)
+    }
+
+    private func readout(label: String, value: String,
+                         alignment: HorizontalAlignment = .leading) -> some View {
+        VStack(alignment: alignment, spacing: 4) {
+            FieldLabel(label)
+            Text(value)
+                .font(Typography.metric)
+                .foregroundStyle(Palette.primaryText)
+                .contentTransition(.numericText())
+        }
     }
 
     private var finished: Binding<UpscaleResult?> {

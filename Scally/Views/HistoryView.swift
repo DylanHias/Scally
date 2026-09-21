@@ -168,14 +168,23 @@ private struct HistoryRow: View {
                 Text(record.originalFilename)
                     .font(Typography.body).foregroundStyle(Palette.primaryText).lineLimit(1)
                 Text(record.dimensionSummary)
-                    .font(Typography.caption.monospaced()).foregroundStyle(Palette.secondaryText)
+                    .font(Typography.caption.monospaced())
+                    .foregroundStyle(Palette.secondaryText)
+                    .lineLimit(1)
             }
 
             Spacer(minLength: 8)
             ScaleBadge(scale: record.appliedScale)
-            Text(RelativeDate.short(record.createdAt))
-                .font(Typography.caption.monospaced())
+            // History uses the long form the design specifies - TODAY 09:38,
+            // TUE 18:02, 12 SEP - where Import's compact list uses the short.
+            Text(RelativeDate.long(record.createdAt))
+                .font(Typography.badge)
+                .tracking(0.5)
                 .foregroundStyle(Palette.tertiaryText)
+                // The date keeps its width and the filename gives way. The
+                // other order truncates the one column that is never
+                // recoverable from anywhere else on the row.
+                .fixedSize()
         }
         .padding(.vertical, 10)
         .contentShape(Rectangle())

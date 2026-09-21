@@ -1,6 +1,11 @@
 import SwiftUI
 import SwiftData
 
+/// Built from the design's tokens rather than a stock `List`.
+///
+/// The grouped-list default brought its own background, its own separators and
+/// its own type, none of which are this app's, so the one screen that is
+/// nothing but rows was the one screen that did not look like the app.
 struct SettingsView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
@@ -15,60 +20,27 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    LabeledContent("Storage used") {
-                        Text(ByteCountFormatter.string(fromByteCount: Int64(storedBytes), countStyle: .file))
-                            .font(Typography.metric)
-                    }
-                    LabeledContent("Results kept") {
-                        Text("\(records.count)").font(Typography.metric)
-                    }
-                    Button("Clear history", role: .destructive) { confirmingClear = true }
-                        .disabled(records.isEmpty)
-                }
+            ZStack {
+                Palette.background.ignoresSafeArea()
 
-                Section {
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Text("Sharpening")
-                            Spacer()
-                            Text(sharpen < 0.01 ? "Off" : String(format: "%.2f", sharpen))
-                                .font(Typography.metric)
-                                .foregroundStyle(Palette.secondaryText)
-                        }
-                        Slider(value: $sharpen, in: 0...1.2, step: 0.05)
-                            .tint(Palette.accent)
+                ScrollView {
+                    VStack(spacing: 14) {
+                        storage
+                        sharpening
+                        preferences
+                        footer
                     }
-                } footer: {
-                    Text("Applied after upscaling. It cannot invent detail, but it raises edge contrast, which is what reads as sharp. Too much produces halos.")
-                        .font(Typography.caption)
-                }
-
-                Section {
-                    Picker("Appearance", selection: $appearance) {
-                        Text("System").tag("system")
-                        Text("Light").tag("light")
-                        Text("Dark").tag("dark")
-                    }
-                    LabeledContent("Save location", value: "Photos")
-                    NavigationLink("Licenses") { LicensesView() }
-                    NavigationLink("Compare models") { CompareModelsView() }
-                }
-
-                Section {
-                    Text("Runs entirely on this iPhone. Nothing is uploaded. No account. No internet.")
-                        .font(Typography.caption)
-                        .foregroundStyle(Palette.secondaryText)
-                } footer: {
-                    Text("VERSION \(appVersion) · BUILD \(buildNumber)")
-                        .font(Typography.sectionLabel)
+                    .padding(.horizontal, Metrics.gutter)
+                    .padding(.vertical, 12)
                 }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Palette.background, for: .navigationBar)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }.tint(Palette.accent)
+                }
             }
             .task { storedBytes = store.totalBytes() }
             .confirmationDialog("Clear history?", isPresented: $confirmingClear,
@@ -79,8 +51,104 @@ struct SettingsView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("All \(records.count) results and their \(ByteCountFormatter.string(fromByteCount: Int64(storedBytes), countStyle: .file)) will be removed from Scally. The originals in your Photos library are untouched.")
+                Text("All \(records.count) results and their \(formatted(storedBytes)) will be removed from Scally. The originals in your Photos library are untouched.")
             }
+        }
+    }
+
+    private var storage: some View {
+        SettingsCard {
+            SettingsRow(label: "Storage used", value: formatted(storedBytes))
+            SettingsDivider()
+            SettingsRow(label: "Results kept", value: "\(records.count)")
+            SettingsDivider()
+            Button { confirmingClear = true } label: {
+                HStack {
+                    Text("Clear history")
+                        .font(Typography.body)
+                        .foregroundStyle(records.isEmpty ? Palette.tertiaryText : Palette.destructive)
+                    Spacer()
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 13)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(records.isEmpty)
+        }
+    }
+
+    private var sharpening: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SettingsCard {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Sharpening").font(Typography.body).foregroundStyle(Palette.primaryText)
+                        Spacer()
+                        Text(sharpen < 0.01 ? "OFF" : String(format: "%.2f", sharpen))
+                            .font(Typography.metric)
+                            .foregroundStyle(Palette.secondaryText)
+                    }
+                    Slider(value: $sharpen, in: 0...1.2, step: 0.05)
+                        .tint(Palette.accent)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+            }
+
+            Text("Applied after upscaling. It cannot invent detail, but it raises edge contrast, which is what reads as sharp. Too much produces halos.")
+                .font(Typography.caption)
+                .foregroundStyle(Palette.tertiaryText)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 4)
+        }
+    }
+
+    private var preferences: some View {
+        SettingsCard {
+            Menu {
+                Picker("Appearance", selection: $appearance) {
+                    Text("System").tag("system")
+                    Text("Light").tag("light")
+                    Text("Dark").tag("dark")
+                }
+            } label: {
+                SettingsRow(label: "Appearance", value: appearanceName, chevron: true)
+            }
+            SettingsDivider()
+            SettingsRow(label: "Save location", value: "Photos")
+            SettingsDivider()
+            NavigationLink { LicensesView() } label: {
+                SettingsRow(label: "Licenses", value: "", chevron: true)
+            }
+            .buttonStyle(.plain)
+            SettingsDivider()
+            NavigationLink { CompareModelsView() } label: {
+                SettingsRow(label: "Compare models", value: "", chevron: true)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    private var footer: some View {
+        VStack(spacing: 10) {
+            Text("Runs entirely on this iPhone. Nothing is uploaded. No account. No internet.")
+                .font(Typography.caption)
+                .foregroundStyle(Palette.secondaryText)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
+            FieldLabel("VERSION \(appVersion) · BUILD \(buildNumber)")
+        }
+        .padding(.top, 14)
+        .padding(.bottom, 8)
+    }
+
+    private var appearanceName: String {
+        switch appearance {
+        case "light": "Light"
+        case "dark": "Dark"
+        default: "System"
         }
     }
 
@@ -90,6 +158,58 @@ struct SettingsView: View {
 
     private var buildNumber: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
+    }
+
+    private func formatted(_ bytes: Int) -> String {
+        ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file)
+    }
+}
+
+/// One bordered surface holding a run of rows - the app's card, not the
+/// system's inset group.
+struct SettingsCard<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(spacing: 0) { content }
+            .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
+            .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.border))
+    }
+}
+
+struct SettingsDivider: View {
+    var body: some View {
+        Divider().overlay(Palette.border).padding(.leading, 14)
+    }
+}
+
+/// Label left, monospaced value right - the same shape as `MetricRow`, in the
+/// sentence case the design uses for settings rather than mono capitals.
+struct SettingsRow: View {
+    let label: String
+    let value: String
+    var chevron = false
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text(label)
+                .font(Typography.body)
+                .foregroundStyle(Palette.primaryText)
+            Spacer(minLength: 12)
+            if !value.isEmpty {
+                Text(value)
+                    .font(Typography.metric)
+                    .foregroundStyle(Palette.secondaryText)
+            }
+            if chevron {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Palette.tertiaryText)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 13)
+        .contentShape(Rectangle())
     }
 }
 
