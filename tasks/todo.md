@@ -348,6 +348,33 @@ swaps were decided on impression.
       Bundle is now RealESRNet (shipping), MoSR_mssim and SPAN_mssim. The
       GAN models are gone. App 90 MB -> 44 MB.
 
+## Phase 16 — 2x by default (2026-09-21)
+- [x] **Task 40** — `defaultScale` is 2x wherever the budget allows
+      Measured on four photographs against the original, shipping model:
+
+      | scale | PSNR | SSIM | detail |
+      |---|---|---|---|
+      | 4x | 32.28 | 0.8973 | 0.16x |
+      | **2x** | **36.34** | **0.9341** | **0.25x** |
+
+      Four decibels and half again as much of the detail the camera recorded.
+      At 4x, fifteen of every sixteen output pixels were never photographed,
+      so a faithful model has nothing to work from and an unfaithful one
+      invents - which is the whole complaint. At 2x there is enough signal to
+      genuinely resolve.
+      **Deliberate divergence from the design**, whose Configure screen shows
+      4x selected. 4x is still one tap away.
+
+**Why not a large generative model** (asked, answered, recorded so it is not
+relitigated): a hosted image model does not enhance a photograph, it generates
+a new one that resembles it - faces come back subtly different, text becomes
+gibberish. It is the "too digitalised" failure taken to its limit. It also
+contradicts four claims the app currently makes on screen (`NETWORK - NOT
+USED`, "never connects to the internet", "Nothing is uploaded. No account. No
+internet.", "Detail is reconstructed, not invented"), costs roughly $0.02-0.19
+per image in an app with no purchases, and ends offline use. Viable only as a
+different product with different promises.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),

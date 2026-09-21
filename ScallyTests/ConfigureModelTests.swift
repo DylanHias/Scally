@@ -28,8 +28,10 @@ private let generous = MemoryBudget(availableBytes: 4_000_000_000)
     #expect(size.height == 800)
 }
 
-@Test func defaultScaleIsTheLargestAvailable() {
-    #expect(ConfigureModel(inputWidth: 500, inputHeight: 500, budget: generous).defaultScale == 4)
+@Test func defaultScaleIsTwoWheneverItFits() {
+    // Deliberately not the largest available: 2x is measurably more faithful,
+    // and faithfulness is the point of the app.
+    #expect(ConfigureModel(inputWidth: 500, inputHeight: 500, budget: generous).defaultScale == 2)
     #expect(ConfigureModel(inputWidth: 3024, inputHeight: 4032,
                            budget: MemoryBudget(availableBytes: 400_000_000)).defaultScale == 2)
 }
