@@ -3,23 +3,24 @@ import CoreML
 
 /// The models Scally bundles, and which one it runs.
 ///
-/// All three are convolutional, and that is not a coincidence. Window-attention
-/// models - DAT2 and DRCT-L were both measured - are rejected outright by the
-/// Neural Engine compiler (`ANECCompile() FAILED`), leaving them 6-13x slower
-/// on GPU and over 100 MB each. DAT2 would not run at all under the default
-/// compute units.
+/// **The loss function matters more than the architecture.** Every model here
+/// is convolutional, because window attention is rejected outright by the
+/// Neural Engine compiler - DAT2 and DRCT-L were both measured at 1110 ms and
+/// 2208 ms per tile against ESRGAN's 145 ms on the ANE. But among the
+/// convolutional models, what separates them for a photograph is not size or
+/// speed, it is whether they were trained adversarially.
 ///
-/// Among the convolutional models the ordering is not by size. Measured per
-/// 256x256 tile:
+/// A GAN-trained model is rewarded for producing output that *looks* like a
+/// sharp photograph, which in practice means inventing high-frequency texture:
+/// hair strands that were never resolved, foliage detail that was never
+/// recorded. On a genuinely degraded image that is a rescue. On a decent one
+/// it reads as digitally sharpened - "modified", in the words of the person
+/// this app is for - and it contradicts what the Configure screen promises:
+/// detail is reconstructed, not invented.
 ///
-///     ESRGAN 16.7M   145 ms on ANE   380 ms CPU+GPU
-///     PLKSR   7.4M   186 ms on ANE   101 ms CPU+GPU
-///     MoSR    4.3M   102 ms on ANE    72 ms CPU+GPU
-///
-/// The largest model is the fastest one on the Neural Engine, and the two
-/// smaller ones are *slower* on it than off it. RRDBNet is 3x3 convolutions
-/// throughout, which is what the ANE is built for; PLKSR's 17x17 partial large
-/// kernel is not, so its ANE path is worse than no ANE at all.
+/// `RealESRNet` is the same RRDBNet as `NomosWebPhoto`, the same 16.7M
+/// weights, trained with L1 alone. It is therefore the same speed on the ANE
+/// and does not hallucinate. It ships.
 public struct UpscalerOption: Identifiable, Sendable {
     public let id: String
     public let title: String
@@ -32,17 +33,20 @@ public struct UpscalerOption: Identifiable, Sendable {
 
     /// What the pipeline runs unless told otherwise.
     public static let shipping = UpscalerOption(
-        id: "NomosWebPhoto", title: "Nomos Web Photo",
-        detail: "RRDBNet, trained on realistic web-photo degradation.",
+        id: "RealESRNet", title: "Real-ESRNet",
+        detail: "No adversarial loss. Resolves detail, never invents it.",
         parameters: "16.7M")
 
     public static let all: [UpscalerOption] = [
         shipping,
+        UpscalerOption(id: "NomosWebPhoto", title: "Nomos Web Photo",
+                       detail: "GAN-trained. Sharper, and visibly manufactured.",
+                       parameters: "16.7M"),
         UpscalerOption(id: "NomosPLKSR", title: "Nomos PLKSR",
-                       detail: "Same training data, RealPLKSR backbone. Poor ANE fit.",
+                       detail: "GAN-trained, most aggressive. Poor ANE fit.",
                        parameters: "7.4M"),
         UpscalerOption(id: "MoSR", title: "MoSR",
-                       detail: "Smallest and quickest. Least capacity.",
+                       detail: "GAN-trained. Smallest and quickest.",
                        parameters: "4.3M"),
     ]
 }

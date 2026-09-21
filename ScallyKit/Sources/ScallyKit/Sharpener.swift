@@ -16,7 +16,10 @@ public struct Sharpener: Sendable {
     public let radius: Double
 
     public static let none = Sharpener(intensity: 0, radius: 0)
-    public static let standard = Sharpener(intensity: 0.45, radius: 1.6)
+    /// Off. Unsharp masking raises acutance by manufacturing edge contrast,
+    /// which is precisely the "digitally modified" quality a faithful upscale
+    /// is trying to avoid. The slider remains for anyone who wants it.
+    public static let standard = Sharpener(intensity: 0, radius: 1.6)
 
     /// Radius scaled for an upscale factor. Enlarging by 4x widens every edge
     /// by 4x, so a radius fixed in output pixels lands inside the edge and

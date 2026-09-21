@@ -23,6 +23,7 @@ ScallyKit/Sources/ScallyKit/Resources/VQDecoder.mlpackage/
 # converters in tools/. GitHub rejects anything over 100 MB, and the fused
 # diffusion weights alone are 333 MB.
 ScallyKit/Sources/ScallyKit/Resources/*.mlpackage/
+!ScallyKit/Sources/ScallyKit/Resources/RealESRNet.mlpackage/
 !ScallyKit/Sources/ScallyKit/Resources/NomosWebPhoto.mlpackage/
 !ScallyKit/Sources/ScallyKit/Resources/NomosPLKSR.mlpackage/
 !ScallyKit/Sources/ScallyKit/Resources/MoSR.mlpackage/

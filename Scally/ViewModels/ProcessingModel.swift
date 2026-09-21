@@ -28,7 +28,7 @@ final class ProcessingModel {
         elapsedAtLastSample = elapsed
     }
 
-    func start(source: URL, scale: Int, sharpen: Double = 0.45) {
+    func start(source: URL, scale: Int, sharpen: Double = 0) {
         guard case .idle = state else { return }
         state = .running
         let started = Date()
@@ -40,7 +40,7 @@ final class ProcessingModel {
         task = Task { [self] in
             do {
                 let pipeline = UpscalePipeline(
-                    upscaler: try CoreMLUpscaler(modelName: "NomosWebPhoto"),
+                    upscaler: try CoreMLUpscaler(modelName: "RealESRNet"),
                     faceRestorer: NoopFaceRestorer(),
                     faceDetector: VisionFaceDetector(),
                     sharpener: .forUpscale(intensity: sharpen, scale: scale),

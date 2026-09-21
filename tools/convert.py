@@ -44,6 +44,16 @@ MODELS = {
     # RRDBNet. 7.4M parameters against 16.7M, and a 17x17 large kernel applied
     # to a quarter of the channels rather than 23 dense blocks. Pure
     # convolution, so the ANE should take it.
+    # The non-GAN twin of x4plus: same RRDBNet, same 16.7M weights shape, but
+    # trained with L1 only. No adversarial loss means no invented texture - it
+    # is the "faithful" end of the trade, and the reason to have it is that
+    # every GAN model reads as digitally sharpened on a decent photograph.
+    "esrnet": dict(
+        url="https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.1/RealESRNet_x4plus.pth",
+        weights=ROOT / "tools" / "RealESRNet_x4plus.pth",
+        arch="rrdb",
+        product="RealESRNet",
+    ),
     "plksr": dict(
         url="https://github.com/Phhofm/models/releases/download/4xNomosWebPhoto_RealPLKSR/4xNomosWebPhoto_RealPLKSR.safetensors",
         weights=ROOT / "tools" / "4xNomosWebPhoto_RealPLKSR.safetensors",

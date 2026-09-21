@@ -11,6 +11,7 @@ let package = Package(
         .target(
             name: "ScallyKit",
             resources: [
+                .copy("Resources/RealESRNet.mlpackage"),
                 .copy("Resources/NomosWebPhoto.mlpackage"),
                 .copy("Resources/NomosPLKSR.mlpackage"),
                 .copy("Resources/MoSR.mlpackage"),

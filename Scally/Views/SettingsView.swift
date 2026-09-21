@@ -13,7 +13,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var records: [UpscaleRecord]
     @AppStorage("appearance") private var appearance = "system"
-    @AppStorage("sharpen") private var sharpen = 0.45
+    @AppStorage("sharpen") private var sharpen = 0.0
 
     /// Harness seam, as in `HistoryView`.
     var startConfirmingClear = false
@@ -242,8 +242,11 @@ struct LicensesView: View {
     }
 
     private let entries = [
+        Entry(title: "Real-ESRGAN / Real-ESRNet",
+              blurb: "The model Scally runs, by Xintao Wang et al. BSD 3-Clause.",
+              resource: "RealESRGAN-BSD3"),
         Entry(title: "Phhofm models",
-              blurb: "All three bundled models, by Philip Hofmann. CC BY 4.0 - attribution only, commercial use permitted.",
+              blurb: "The three comparison models, by Philip Hofmann. CC BY 4.0 - attribution only, commercial use permitted.",
               resource: "Phhofm-models-CC-BY-4.0"),
     ]
 

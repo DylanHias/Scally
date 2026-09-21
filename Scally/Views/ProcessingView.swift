@@ -10,7 +10,7 @@ struct ProcessingView: View {
     let pending: PendingImage
     let scale: Int
 
-    @AppStorage("sharpen") private var sharpen = 0.45
+    @AppStorage("sharpen") private var sharpen = 0.0
     @State private var model = ProcessingModel()
     @Environment(\.dismiss) private var dismiss
 

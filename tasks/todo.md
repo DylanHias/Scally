@@ -279,6 +279,38 @@ attempt used a photo with a Laplacian variance of 6.7. Speed ruled the
 transformers out regardless, but ESRGAN vs PLKSR vs MoSR remains a judgement
 call awaiting a sharp photograph.
 
+## Phase 14 — The loss function, not the architecture (2026-09-21)
+Dylan compared all three bundled models and rejected all of them: "they look
+sharper but too digitalised... it looks modified". The cause was not capacity,
+and a bigger model would have made it worse.
+
+- [x] **Task 36** — Root cause: adversarial training
+      Every model bundled to that point was GAN-trained. Adversarial loss
+      rewards output that *looks* like a sharp photograph, which in practice
+      means inventing high-frequency texture. Verified visually against ground
+      truth at 1:1: the GAN models manufacture hair strands and foliage that
+      were never resolved; Real-ESRNet, the same RRDBNet trained with L1
+      alone, sharpens the in-focus subject without inventing anything.
+      **This also resolves a contradiction in the product.** The Configure
+      screen promises "Detail is reconstructed, not invented." The GAN models
+      broke that promise.
+- [x] **Task 37** — Real-ESRNet ships; sharpening defaults off
+      Same architecture and the same 16.7M weights as the model it replaces,
+      so identical on the ANE at ~145 ms/tile. BSD-3-Clause, notice recovered
+      from commit 3b9b6c2. The unsharp mask now defaults to 0: it manufactures
+      edge contrast, which is exactly the quality being designed out. The
+      slider stays.
+      **Method note:** PSNR against ground truth was misleading here and
+      nearly sent this the wrong way - it ranked plain Lanczos above every
+      model, because the reference crop has genuinely shallow depth of field
+      and "do nothing" scores well against soft truth. The 1:1 visual decided
+      it. Numbers alone would have been wrong.
+
+**Rejected on measurement, recorded so it is not revisited:** window-attention
+models are refused by the ANE compiler (DAT2 1110 ms/tile, DRCT-L 2208 ms/tile
+against 145 ms), and going larger would have worsened the actual complaint
+rather than fixing it, since the large models available are also GAN-trained.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),
