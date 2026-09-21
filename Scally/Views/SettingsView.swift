@@ -6,6 +6,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var records: [UpscaleRecord]
     @AppStorage("appearance") private var appearance = "system"
+    @AppStorage("sharpen") private var sharpen = 0.45
 
     @State private var confirmingClear = false
     @State private var storedBytes = 0
@@ -25,6 +26,23 @@ struct SettingsView: View {
                     }
                     Button("Clear history", role: .destructive) { confirmingClear = true }
                         .disabled(records.isEmpty)
+                }
+
+                Section {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("Sharpening")
+                            Spacer()
+                            Text(sharpen < 0.01 ? "Off" : String(format: "%.2f", sharpen))
+                                .font(Typography.metric)
+                                .foregroundStyle(Palette.secondaryText)
+                        }
+                        Slider(value: $sharpen, in: 0...1.2, step: 0.05)
+                            .tint(Palette.accent)
+                    }
+                } footer: {
+                    Text("Applied after upscaling. It cannot invent detail, but it raises edge contrast, which is what reads as sharp. Too much produces halos.")
+                        .font(Typography.caption)
                 }
 
                 Section {

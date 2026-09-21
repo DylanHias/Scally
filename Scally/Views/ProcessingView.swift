@@ -5,6 +5,7 @@ struct ProcessingView: View {
     let pending: PendingImage
     let scale: Int
 
+    @AppStorage("sharpen") private var sharpen = 0.45
     @State private var model = ProcessingModel()
     @Environment(\.dismiss) private var dismiss
 
@@ -51,7 +52,7 @@ struct ProcessingView: View {
         .task {
             UIApplication.shared.isIdleTimerDisabled = true
             defer { UIApplication.shared.isIdleTimerDisabled = false }
-            model.start(source: pending.url, scale: scale)
+            model.start(source: pending.url, scale: scale, sharpen: sharpen)
         }
         .navigationDestination(item: finished) { result in
             ResultView(pending: pending, result: result)

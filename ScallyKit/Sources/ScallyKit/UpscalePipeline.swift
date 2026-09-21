@@ -34,6 +34,7 @@ public struct UpscalePipeline: Sendable {
     private let upscaler: any Upscaler
     private let faceRestorer: any FaceRestorer
     private let budget: MemoryBudget
+    private let sharpener: Sharpener
     private let scratchDirectory: URL
     private let overlap = 16
 
@@ -45,10 +46,12 @@ public struct UpscalePipeline: Sendable {
     public init(upscaler: any Upscaler,
                 faceRestorer: any FaceRestorer = NoopFaceRestorer(),
                 budget: MemoryBudget = .current(),
+                sharpener: Sharpener = .standard,
                 scratchDirectory: URL = FileManager.default.temporaryDirectory) {
         self.upscaler = upscaler
         self.faceRestorer = faceRestorer
         self.budget = budget
+        self.sharpener = sharpener
         self.scratchDirectory = scratchDirectory
     }
 
@@ -150,7 +153,8 @@ public struct UpscalePipeline: Sendable {
             .appendingPathComponent("scally-output-\(UUID().uuidString)")
             .appendingPathExtension(format.fileExtension)
 
-        try OutputWriter.write(buffer: finalBuffer, to: outputURL, format: format)
+        try OutputWriter.write(buffer: finalBuffer, to: outputURL, format: format,
+                               sharpener: sharpener)
 
         return UpscaleResult(
             outputURL: outputURL,

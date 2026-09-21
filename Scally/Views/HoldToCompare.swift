@@ -26,7 +26,11 @@ struct HoldToCompare: View {
 
                 Image(uiImage: showingOriginal ? before : after)
                     .resizable()
-                    .interpolation(.none)
+                    // Nearest-neighbour ONLY past 1:1, where it shows true
+                    // pixels. Below that it is downsampling, and nearest
+                    // downsampling aliases the image into a smudged mess.
+                    .interpolation(isMagnifiedPastActualPixels(viewport: geometry.size)
+                                   ? .none : .high)
                     .scaledToFit()
                     .scaleEffect(zoom)
                     .offset(offset)
@@ -78,6 +82,10 @@ struct HoldToCompare: View {
     }
 
     private func clamp(_ value: CGFloat) -> CGFloat { min(max(value, 1), maximumZoom) }
+
+    private func isMagnifiedPastActualPixels(viewport: CGSize) -> Bool {
+        fitScale(viewport: viewport) * zoom * UIScreen.main.scale >= 1
+    }
 
     /// Only suggest tapping 100% when the view is actually below actual pixels.
     /// A small output can already exceed 1:1 at fit, and telling someone to go
