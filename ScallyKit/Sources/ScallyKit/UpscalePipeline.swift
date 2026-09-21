@@ -12,18 +12,23 @@ public struct UpscaleResult: Sendable, Identifiable, Hashable {
     public let appliedScale: Int
     public let requestedScale: Int
     public let duration: TimeInterval
+    /// False when the input was already clean enough that resampling alone was
+    /// more faithful than the model. See `InputQuality`.
+    public let usedModel: Bool
 
     /// A public struct with an internal memberwise init cannot be constructed
     /// by consumers at all, which makes it useless for previews, fixtures and
     /// anything outside the package.
     public init(outputURL: URL, outputWidth: Int, outputHeight: Int,
-                appliedScale: Int, requestedScale: Int, duration: TimeInterval) {
+                appliedScale: Int, requestedScale: Int, duration: TimeInterval,
+                usedModel: Bool = true) {
         self.outputURL = outputURL
         self.outputWidth = outputWidth
         self.outputHeight = outputHeight
         self.appliedScale = appliedScale
         self.requestedScale = requestedScale
         self.duration = duration
+        self.usedModel = usedModel
     }
 
     public var wasClamped: Bool { appliedScale != requestedScale }
@@ -77,6 +82,31 @@ public struct UpscalePipeline: Sendable {
                                            inputHeight: input.height)
         guard let effectiveScale = decision.scale else {
             throw UpscaleError.imageTooLarge(pixels: input.width * input.height)
+        }
+
+        // On an already-clean photograph the model is measurably worse than a
+        // plain resample - nearly four decibels worse on a pristine input - so
+        // it is skipped. See InputQuality for the measurements.
+        let quality = InputQuality.measure(input)
+        if !quality.needsRestoration {
+            progress(1)
+            let resampled = try Self.resample(
+                input, to: (input.width * effectiveScale, input.height * effectiveScale),
+                directory: scratchDirectory)
+            let format = OutputWriter.Format.preferred(hasAlpha: input.hasAlpha)
+            let directory = destinationDirectory ?? FileManager.default.temporaryDirectory
+            let outputURL = directory
+                .appendingPathComponent("scally-output-\(UUID().uuidString)")
+                .appendingPathExtension(format.fileExtension)
+            try OutputWriter.write(buffer: resampled, to: outputURL, format: format,
+                                   sharpener: sharpener, faces: faces)
+            return UpscaleResult(outputURL: outputURL,
+                                 outputWidth: resampled.width,
+                                 outputHeight: resampled.height,
+                                 appliedScale: effectiveScale,
+                                 requestedScale: requestedScale,
+                                 duration: Date().timeIntervalSince(started),
+                                 usedModel: false)
         }
 
         // The model is 4x only; 2x is the 4x result downsampled.
@@ -170,8 +200,32 @@ public struct UpscalePipeline: Sendable {
             outputHeight: finalBuffer.height,
             appliedScale: effectiveScale,
             requestedScale: requestedScale,
-            duration: Date().timeIntervalSince(started)
+            duration: Date().timeIntervalSince(started),
+            usedModel: true
         )
+    }
+
+    /// A high-quality resample straight from the decoded input, for the images
+    /// the model would only damage.
+    private static func resample(_ image: LoadedImage,
+                                 to size: (width: Int, height: Int),
+                                 directory: URL) throws -> MappedPixelBuffer {
+        let output = try MappedPixelBuffer(width: size.width, height: size.height,
+                                           directory: directory)
+        var pixels = image.pixels
+        return try pixels.withUnsafeMutableBytes { raw -> MappedPixelBuffer in
+            var source = vImage_Buffer(data: raw.baseAddress,
+                                       height: vImagePixelCount(image.height),
+                                       width: vImagePixelCount(image.width),
+                                       rowBytes: image.bytesPerRow)
+            var destination = vImage_Buffer(data: output.baseAddress,
+                                            height: vImagePixelCount(output.height),
+                                            width: vImagePixelCount(output.width),
+                                            rowBytes: output.bytesPerRow)
+            vImageScale_ARGB8888(&source, &destination, nil,
+                                 vImage_Flags(kvImageHighQualityResampling))
+            return output
+        }
     }
 
     private static func downsample(_ buffer: MappedPixelBuffer,

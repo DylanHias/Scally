@@ -10,14 +10,24 @@ private final class ProgressLog: @unchecked Sendable {
     var samples: [Double] { lock.lock(); defer { lock.unlock() }; return values }
 }
 
-private func writeFixture(width: Int, height: Int) throws -> URL {
+/// - Parameter degraded: adds sensor-like noise, which is what makes
+///   `InputQuality` route the image through the model rather than resampling
+///   it. The plain gradient is, correctly, clean enough not to need one.
+private func writeFixture(width: Int, height: Int, degraded: Bool = false) throws -> URL {
     var pixels = [UInt8](repeating: 0, count: width * height * 4)
+    var seed: UInt64 = 0x243F6A8885A308D3
     for y in 0..<height {
         for x in 0..<width {
             let i = (y * width + x) * 4
-            pixels[i] = UInt8((x * 5) % 256)
-            pixels[i + 1] = 120
-            pixels[i + 2] = UInt8((y * 3) % 256)
+            var jitter = 0.0
+            if degraded {
+                seed = seed &* 6364136223846793005 &+ 1442695040888963407
+                jitter = Double(Int(truncatingIfNeeded: seed >> 33) % 61) - 30
+            }
+            func clamp(_ value: Double) -> UInt8 { UInt8(max(0, min(255, value))) }
+            pixels[i] = clamp(Double((x * 5) % 256) + jitter)
+            pixels[i + 1] = clamp(120 + jitter)
+            pixels[i + 2] = clamp(Double((y * 3) % 256) + jitter)
             pixels[i + 3] = 255
         }
     }
@@ -48,7 +58,10 @@ private func makePipeline() throws -> UpscalePipeline {
 }
 
 @Test func progressIsMonotonicAndReachesOne() async throws {
-    let source = try writeFixture(width: 300, height: 200)
+    // Degraded on purpose: a clean image skips the model entirely and reports
+    // a single completed step, which is correct behaviour and not what this
+    // test is about.
+    let source = try writeFixture(width: 300, height: 200, degraded: true)
     let log = ProgressLog()
     _ = try await makePipeline().run(source: source, requestedScale: 4) { log.record($0) }
 
@@ -56,6 +69,26 @@ private func makePipeline() throws -> UpscalePipeline {
     #expect(samples.count > 1)
     #expect(samples == samples.sorted(), "progress must be monotonic, got \(samples)")
     #expect(samples.last! >= 0.999)
+}
+
+@Test func anAlreadyCleanImageIsResampledWithoutTheModel() async throws {
+    let source = try writeFixture(width: 300, height: 200)
+    let result = try await makePipeline().run(source: source, requestedScale: 2) { _ in }
+
+    // On a clean photograph the model is measurably worse than resampling -
+    // nearly four decibels at 2x - so the pipeline declines to run it.
+    #expect(!result.usedModel)
+    #expect(result.outputWidth == 600)
+    #expect(result.outputHeight == 400)
+    #expect(result.appliedScale == 2)
+    try? FileManager.default.removeItem(at: result.outputURL)
+}
+
+@Test func aDegradedImageStillRunsTheModel() async throws {
+    let source = try writeFixture(width: 300, height: 200, degraded: true)
+    let result = try await makePipeline().run(source: source, requestedScale: 2) { _ in }
+    #expect(result.usedModel)
+    try? FileManager.default.removeItem(at: result.outputURL)
 }
 
 @Test func requestingTwoTimesDownsamplesTheFourTimesResult() async throws {

@@ -375,6 +375,39 @@ internet.", "Detail is reconstructed, not invented"), costs roughly $0.02-0.19
 per image in an app with no purchases, and ends offline use. Viable only as a
 different product with different promises.
 
+## Phase 17 — Quality detection and routing (2026-09-21)
+The finding that prompted it: on an already-clean photograph the model is
+**worse** than a plain resample. Measured at 2x against the original, model
+minus resample: pristine -3.87 dB, JPEG 90 -1.41, JPEG 75 -0.65, JPEG 60
++0.29, JPEG 20 +0.86, blur 1.0 +0.09, blur 1.8 +1.13, noise sigma 6 +3.75.
+These models are trained on heavy degradation; given a clean input they repair
+damage that is not there.
+
+- [x] **Task 41** — `InputQuality`, three signals, thresholds derived not guessed
+      `blockiness` (discontinuity on the 8-pixel grid over discontinuity off
+      it), `sharpness` (mean |Laplacian| over mean |gradient|) and `noise`
+      (high-frequency energy in the flattest fifth of blocks). Rule: run the
+      model when blockiness > 1.8 **or** sharpness < 0.70 **or** noise > 4.0.
+      Eleven degradation cases across four photographs, all eleven classified
+      correctly, and the Swift implementation cross-checked against the Python
+      the thresholds were fitted on - all four decisions agree.
+      **Two mistakes caught before shipping.** The first metric tried was
+      absolute Laplacian, which is content-dependent: a genuinely soft
+      photograph scores the same as a blurred one, and it sent a clean portrait
+      to the model. Replaced with the gradient-normalised ratio. Then the unit
+      test fixtures were wrong twice - a "clean" image whose checkerboard had
+      period 24, a multiple of 8, so every edge sat on the JPEG grid and it
+      measured blockiness 19.7; and a "blocky" fixture that flattened each
+      block entirely, collapsing the ratio's denominator to zero.
+- [x] **Task 42** — Pipeline routes, and says so
+      A clean image is resampled with vImage and never touches the model,
+      which is also much faster. `UpscaleResult.usedModel` records the choice
+      and Result shows `ALREADY SHARP · RESIZED ONLY`, because a silent
+      resample looks like the app did nothing.
+      One existing test correctly broke: the progress fixture was a smooth
+      gradient, so it now takes the resample path and reports a single step.
+      It has a degraded variant, and both paths have a test.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),

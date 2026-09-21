@@ -69,6 +69,20 @@ struct ResultView: View {
                     .padding(.bottom, 14)
             }
 
+            // Say so when the model was declined. Otherwise a resample looks
+            // like the app did nothing, which is the same confusion that
+            // over-processing causes, in the other direction.
+            if !result.usedModel {
+                HStack(spacing: 6) {
+                    Text("ALREADY SHARP · RESIZED ONLY")
+                        .font(Typography.captionTiny)
+                        .tracking(Tracking.sectionLabel)
+                        .foregroundStyle(Palette.label(0.45))
+                    Spacer()
+                }
+                .padding(.bottom, 8)
+            }
+
             if !isShowingFailure {
                 DetailRow(label: "INPUT",
                           value: "\(pending.width) × \(pending.height) · \(formatted(pending.byteCount))",
