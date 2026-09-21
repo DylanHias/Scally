@@ -31,8 +31,9 @@ enum OutputWriter {
     /// pattern the pager handles best - memory stays flat even for very large
     /// outputs.
     static func write(buffer: MappedPixelBuffer, to url: URL, format: Format,
-                      sharpener: Sharpener = .none) throws {
-        let image = sharpener.apply(to: try buffer.makeCGImage())
+                      sharpener: Sharpener = .none,
+                      faces: FaceRegions = .none) throws {
+        let image = sharpener.apply(to: try buffer.makeCGImage(), softening: faces)
 
         guard let destination = CGImageDestinationCreateWithURL(
             url as CFURL, format.contentType.identifier as CFString, 1, nil

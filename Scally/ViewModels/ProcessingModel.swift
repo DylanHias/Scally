@@ -42,6 +42,7 @@ final class ProcessingModel {
                 let pipeline = UpscalePipeline(
                     upscaler: try CoreMLUpscaler(modelName: "NomosPLKSR"),
                     faceRestorer: NoopFaceRestorer(),
+                    faceDetector: VisionFaceDetector(),
                     sharpener: .forUpscale(intensity: sharpen, scale: scale),
                     scratchDirectory: FileManager.default.urls(for: .cachesDirectory,
                                                                in: .userDomainMask)[0]

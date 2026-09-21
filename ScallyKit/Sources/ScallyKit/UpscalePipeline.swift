@@ -33,6 +33,7 @@ public struct UpscaleResult: Sendable, Identifiable, Hashable {
 public struct UpscalePipeline: Sendable {
     private let upscaler: any Upscaler
     private let faceRestorer: any FaceRestorer
+    private let faceDetector: any FaceDetecting
     private let budget: MemoryBudget
     private let sharpener: Sharpener
     private let scratchDirectory: URL
@@ -45,11 +46,13 @@ public struct UpscalePipeline: Sendable {
     ///   directory nothing else writes to.
     public init(upscaler: any Upscaler,
                 faceRestorer: any FaceRestorer = NoopFaceRestorer(),
+                faceDetector: any FaceDetecting = NoFaceDetector(),
                 budget: MemoryBudget = .current(),
                 sharpener: Sharpener = .standard,
                 scratchDirectory: URL = FileManager.default.temporaryDirectory) {
         self.upscaler = upscaler
         self.faceRestorer = faceRestorer
+        self.faceDetector = faceDetector
         self.budget = budget
         self.sharpener = sharpener
         self.scratchDirectory = scratchDirectory
@@ -63,6 +66,11 @@ public struct UpscalePipeline: Sendable {
         try Task.checkCancellation()
 
         let input = try ImageLoader.load(url: source)
+
+        // Detected on the input, not the enlargement: the rectangles are
+        // normalised, so they describe every later buffer just as well, at a
+        // sixteenth of the work.
+        let faces = input.makeCGImage().map(faceDetector.regions(in:)) ?? .none
 
         let decision = budget.resolveScale(requested: requestedScale,
                                            inputWidth: input.width,
@@ -154,7 +162,7 @@ public struct UpscalePipeline: Sendable {
             .appendingPathExtension(format.fileExtension)
 
         try OutputWriter.write(buffer: finalBuffer, to: outputURL, format: format,
-                               sharpener: sharpener)
+                               sharpener: sharpener, faces: faces)
 
         return UpscaleResult(
             outputURL: outputURL,

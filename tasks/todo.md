@@ -201,6 +201,32 @@ theme on every screen but Import, and the launch animation with the new mark.
 - `Sharpening` and `Compare models`, features the design predates, in that
   same third card.
 
+## Phase 11 — One model, and face awareness (2026-09-21)
+- [x] **Task 30** — RealPLKSR replaces all four models
+      `4xNomosWebPhoto_RealPLKSR`, CC BY 4.0. 7.4M parameters, 14 MB package,
+      Release app **17 MB down from 404 MB**. Architecture derived from the
+      checkpoint and then checked against the author's own ONNX export:
+      6.3e-6 worst pixel once the export's [0,1] clamp was matched. Core ML
+      FP16 sits 1.12% of range from the FP32 PyTorch reference on photographic
+      input; flat-grey sanity check holds.
+- [x] **Task 31** — Golden-image gate re-enabled
+      It had been disabled while the engine was stochastic. RealPLKSR is
+      deterministic, references recorded fresh, verified stable over two
+      separate processes.
+- [x] **Task 32** — Face-aware sharpening — **1 fix round**
+      Vision detects faces on the *input* (normalised rects, so they describe
+      every later buffer at a sixteenth of the cost) and the sharpener keeps
+      only 25% of its intensity inside a feathered ellipse over each face.
+      Chosen over CodeFormer/GFPGAN on licensing: those are non-commercial and
+      would have re-encumbered an app that just became commercially free.
+      **Fix round:** the mask was drawn into a `CGContext`, whose origin is
+      bottom-left, using top-left rectangles - so the damping landed on the
+      mirror image of the face. The unit test could not catch it because the
+      test rectangle was centred and therefore its own reflection. Found by an
+      end-to-end run on a real photograph; the test now uses an asymmetric
+      rectangle checked against its mirrored band. Verified end to end:
+      **29.5x** more change inside the detected face than outside it.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),

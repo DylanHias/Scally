@@ -11,6 +11,19 @@ public struct LoadedImage: Sendable {
     public let hasAlpha: Bool
 
     public var bytesPerRow: Int { width * 4 }
+
+    /// A CGImage over a copy of these pixels, for the frameworks that want one.
+    public func makeCGImage() -> CGImage? {
+        guard let provider = CGDataProvider(data: Data(pixels) as CFData),
+              let space = CGColorSpace(name: CGColorSpace.sRGB) else { return nil }
+        return CGImage(width: width, height: height,
+                       bitsPerComponent: 8, bitsPerPixel: 32,
+                       bytesPerRow: bytesPerRow, space: space,
+                       bitmapInfo: CGBitmapInfo(
+                           rawValue: CGImageAlphaInfo.premultipliedLast.rawValue),
+                       provider: provider, decode: nil,
+                       shouldInterpolate: false, intent: .defaultIntent)
+    }
 }
 
 public enum ImageLoader {
