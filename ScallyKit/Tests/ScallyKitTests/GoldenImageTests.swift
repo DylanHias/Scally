@@ -123,7 +123,7 @@ func upscaleMatchesGoldenReference(name: String) async throws {
     // lets Core ML schedule across ANE, GPU and CPU as it sees fit. (That was
     // not what broke this test - see `seed(for:)` - but pinning it removes a
     // real source of variance for free, since the fixtures are one tile each.)
-    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(modelName: "NomosPLKSR", computeUnits: .cpuOnly),
+    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(modelName: "NomosWebPhoto", computeUnits: .cpuOnly),
                                    faceRestorer: NoopFaceRestorer())
     let result = try await pipeline.run(source: source, requestedScale: 4) { _ in }
     defer { try? FileManager.default.removeItem(at: result.outputURL) }

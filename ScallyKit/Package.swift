@@ -11,7 +11,9 @@ let package = Package(
         .target(
             name: "ScallyKit",
             resources: [
+                .copy("Resources/NomosWebPhoto.mlpackage"),
                 .copy("Resources/NomosPLKSR.mlpackage"),
+                .copy("Resources/MoSR.mlpackage"),
             ]
         ),
         .testTarget(name: "ScallyKitTests", dependencies: ["ScallyKit"])

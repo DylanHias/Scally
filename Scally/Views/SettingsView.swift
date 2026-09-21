@@ -242,9 +242,9 @@ struct LicensesView: View {
     }
 
     private let entries = [
-        Entry(title: "4xNomosWebPhoto_RealPLKSR",
-              blurb: "The model Scally runs, by Philip Hofmann. CC BY 4.0 - attribution only, commercial use permitted.",
-              resource: "NomosWebPhoto-RealPLKSR-CC-BY-4.0"),
+        Entry(title: "Phhofm models",
+              blurb: "All three bundled models, by Philip Hofmann. CC BY 4.0 - attribution only, commercial use permitted.",
+              resource: "Phhofm-models-CC-BY-4.0"),
     ]
 
     private func text(_ resource: String) -> String {

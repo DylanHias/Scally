@@ -27,7 +27,7 @@ import CoreML
         try OutputWriter.write(buffer: b, to: url, format: .png)
     }
 
-    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(modelName: "NomosPLKSR", computeUnits: .cpuAndGPU),
+    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(modelName: "NomosWebPhoto", computeUnits: .cpuAndGPU),
                                    faceRestorer: NoopFaceRestorer(),
                                    budget: MemoryBudget(availableBytes: 3_000_000_000))
 

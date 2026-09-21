@@ -1,0 +1,32 @@
+Scally bundles three super-resolution models, all by Philip Hofmann (Phhofm):
+
+    4xNomosWebPhoto_esrgan      the model Scally runs
+    4xNomosWebPhoto_RealPLKSR   bundled for comparison
+    4xNomos2_hq_mosr            bundled for comparison
+
+https://github.com/Phhofm/models
+
+All three are licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0).
+https://creativecommons.org/licenses/by/4.0/
+
+You are free to share and adapt this material for any purpose, including
+commercially, provided you give appropriate credit, provide a link to the
+licence, and indicate if changes were made.
+
+CHANGES MADE BY SCALLY
+The published PyTorch weights were converted to Core ML packages for on-device
+inference on Apple silicon. Conversion casts the weights to float16 and traces
+each network at a fixed 256x256 tile size. The networks' arithmetic is
+otherwise unaltered. The RealPLKSR conversion was verified against the
+author's own ONNX export and agrees to 6.3e-6 in the worst pixel; its float16
+Core ML package sits roughly 1% of output range from the float32 PyTorch
+reference on photographic input.
+
+ARCHITECTURES
+ESRGAN / RRDBNet, from "ESRGAN: Enhanced Super-Resolution Generative
+Adversarial Networks" (arXiv:1809.00219).
+RealPLKSR, from "Partial Large Kernel CNNs for Efficient Super-Resolution"
+(arXiv:2404.11848).
+MoSR, as implemented by the neosr project
+(https://github.com/neosr-project/neosr).

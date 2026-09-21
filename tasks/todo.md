@@ -250,6 +250,35 @@ available; and Import's ENGINE row reads `NEURAL ENGINE` rather than
 `NEURAL - A19 PRO`, because the simulator reports no recognisable chip. Both
 are data, not layout, and both are correct behaviour.
 
+## Phase 13 — What the Neural Engine will actually run (2026-09-21)
+Dylan reported RealPLKSR looked worse than the ESRGAN it replaced, and asked
+whether a stronger model exists. Measured rather than argued.
+
+- [x] **Task 34** — Transformers evaluated and rejected
+      `4xRealWebPhoto_v4_dat2` (DAT, 11.2M) and `4xNomos2_hq_drct-l`
+      (DRCT-L, 27.6M) both converted, via `tools/convert_transformer.py`, and
+      both are **rejected by the Neural Engine compiler** - `ANECCompile()
+      FAILED`. Per 256x256 tile: DRCT-L 2208 ms, DAT2 1110 ms and it will not
+      run at all under the default compute units. Packages 118 MB and 101 MB.
+      A 12 MP photo would take 8-9 minutes against roughly 30 seconds today.
+      Ruled out on speed before quality was ever a question.
+- [x] **Task 35** — `4xNomosWebPhoto_esrgan` restored as the shipping model
+      **Parameter count is not what decides ANE speed.** Per tile:
+      ESRGAN 16.7M is 145 ms on ANE and 380 ms on CPU+GPU; PLKSR 7.4M is
+      186 ms on ANE and 101 ms off it; MoSR 4.3M is 102 ms on and 72 ms off.
+      The largest model is the fastest on the Neural Engine and the two
+      smaller ones are *slower* on it than without it - RRDBNet is 3x3
+      convolutions throughout, which is what the ANE is built for, while
+      PLKSR's 17x17 partial large kernel is not. The 145 ms also matches the
+      143 ms/tile measured on Dylan's 17 Pro.
+      All three convolutional models ship so they can be compared on device;
+      golden references re-recorded for the new shipping model.
+
+**Still unanswered:** no valid *quality* comparison has ever been run. The one
+attempt used a photo with a Laplacian variance of 6.7. Speed ruled the
+transformers out regardless, but ESRGAN vs PLKSR vs MoSR remains a judgement
+call awaiting a sharp photograph.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),

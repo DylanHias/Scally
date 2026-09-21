@@ -40,7 +40,7 @@ final class ProcessingModel {
         task = Task { [self] in
             do {
                 let pipeline = UpscalePipeline(
-                    upscaler: try CoreMLUpscaler(modelName: "NomosPLKSR"),
+                    upscaler: try CoreMLUpscaler(modelName: "NomosWebPhoto"),
                     faceRestorer: NoopFaceRestorer(),
                     faceDetector: VisionFaceDetector(),
                     sharpener: .forUpscale(intensity: sharpen, scale: scale),
