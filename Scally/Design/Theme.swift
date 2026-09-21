@@ -261,3 +261,26 @@ struct DetailRow: View {
         }
     }
 }
+
+
+/// An image that fills its container without dragging the layout out with it.
+///
+/// `Image.resizable().scaledToFill()` reports the *filled* size as its own, so
+/// a VStack around it sizes to that and the screen's gutters disappear off
+/// both edges. `Color.clear` has no intrinsic size of its own, so it takes the
+/// proposal and the overlay is clipped to it instead of the other way round.
+struct PhotoFill: View {
+    let image: UIImage
+    var opacity: Double = 1
+
+    var body: some View {
+        Color.clear
+            .overlay {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .opacity(opacity)
+            }
+            .clipped()
+    }
+}

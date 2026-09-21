@@ -10,15 +10,22 @@ struct ConfigureView: View {
     @State private var scale: Int
     @Environment(\.dismiss) private var dismiss
 
-    private var model: ConfigureModel {
-        ConfigureModel(inputWidth: pending.width, inputHeight: pending.height,
-                       inputBytes: pending.byteCount)
-    }
+    /// Built once, not on every access.
+    ///
+    /// This was a computed property, so each read constructed a fresh model and
+    /// re-measured free memory. Two reads in one render could disagree, and did:
+    /// the screen showed "4x would need 744 MB, more than this iPhone can give"
+    /// directly above a button that still said "Upscale" rather than
+    /// "Upscale 2x", because the notice and the button had asked different
+    /// models.
+    private let model: ConfigureModel
 
     init(pending: PendingImage) {
         self.pending = pending
-        let initial = ConfigureModel(inputWidth: pending.width, inputHeight: pending.height)
-        _scale = State(initialValue: initial.defaultScale)
+        let model = ConfigureModel(inputWidth: pending.width, inputHeight: pending.height,
+                                   inputBytes: pending.byteCount)
+        self.model = model
+        _scale = State(initialValue: model.defaultScale)
     }
 
     var body: some View {
@@ -39,11 +46,7 @@ struct ConfigureView: View {
     }
 
     private var photo: some View {
-        Image(uiImage: pending.preview)
-            .resizable()
-            .scaledToFill()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .clipped()
+        PhotoFill(image: pending.preview)
             .background(Palette.photoWell)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .padding(.horizontal, Metrics.gutter)

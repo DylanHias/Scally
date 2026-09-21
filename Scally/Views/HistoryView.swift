@@ -173,16 +173,11 @@ private struct HistoryTile: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
             ZStack {
-                Group {
-                    if let image = UIImage(contentsOfFile: thumbnailURL.path) {
-                        Image(uiImage: image).resizable().scaledToFill()
-                    } else {
-                        Rectangle().fill(Palette.surfaceRaised)
-                    }
+                if let image = UIImage(contentsOfFile: thumbnailURL.path) {
+                    PhotoFill(image: image)
+                } else {
+                    Rectangle().fill(Palette.surfaceRaised)
                 }
-                .aspectRatio(1, contentMode: .fill)
-                .frame(maxWidth: .infinity)
-                .clipped()
             }
             .aspectRatio(1, contentMode: .fit)
             .background(Palette.surfaceRaised)

@@ -47,9 +47,7 @@ struct ProcessingView: View {
 
     private var panel: some View {
         ZStack {
-            Image(uiImage: pending.preview)
-                .resizable().scaledToFill()
-                .opacity(0.5)
+            PhotoFill(image: pending.preview, opacity: 0.5)
             Color.black.opacity(0.42)
 
             Text("\(Int(model.progress * 100))%")

@@ -58,9 +58,20 @@ struct RootView: View {
         ZStack {
             Palette.background.ignoresSafeArea()
 
+#if DEBUG
+            if let screen = DesignHarness.screen {
+                DesignHarnessView(screen: screen)
+                    .onAppear { launched = true; appOpacity = 1; appOffset = 0 }
+            } else {
+                ImportView()
+                    .opacity(appOpacity)
+                    .offset(y: appOffset)
+            }
+#else
             ImportView()
                 .opacity(appOpacity)
                 .offset(y: appOffset)
+#endif
 
             if !launched {
                 LaunchView(readiness: readiness) {

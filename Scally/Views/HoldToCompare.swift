@@ -63,7 +63,7 @@ struct HoldToCompare: View {
 
                 VStack {
                     Spacer()
-                    Text(hint(viewport: geometry.size))
+                    Text(hint())
                         .font(Typography.caption)
                         .tracking(1.54)
                         .foregroundStyle(.white)
@@ -84,6 +84,12 @@ struct HoldToCompare: View {
                 state.toggle = { toggleOneToOne(viewport: geometry.size) }
                 state.percentLabel = zoomLabel(viewport: geometry.size)
             }
+            // The size is not settled when onAppear fires, so the badge read
+            // 0% until the first pinch. It has to follow the viewport too.
+            .onChange(of: geometry.size) { _, size in
+                state.toggle = { toggleOneToOne(viewport: size) }
+                state.percentLabel = zoomLabel(viewport: size)
+            }
             .onChange(of: zoom) { _, _ in
                 state.percentLabel = zoomLabel(viewport: geometry.size)
             }
@@ -96,13 +102,11 @@ struct HoldToCompare: View {
         fitScale(viewport: viewport) * zoom * UIScreen.main.scale >= 1
     }
 
-    /// Only suggest tapping 100% when the view is actually below actual pixels.
-    /// A small output can already exceed 1:1 at fit, and telling someone to go
-    /// find real pixels they are already looking at is nonsense.
-    private func hint(viewport: CGSize) -> String {
-        if showingOriginal { return "ORIGINAL" }
-        let effective = fitScale(viewport: viewport) * zoom * UIScreen.main.scale
-        return effective < 0.99 ? "TAP 100% FOR REAL PIXELS" : "HOLD TO SEE ORIGINAL"
+    /// The design gives this pill one line of copy. An earlier version swapped
+    /// in "TAP 100% FOR REAL PIXELS" below 1:1, which is useful advice and not
+    /// in the design; the badge in the bar already offers that affordance.
+    private func hint() -> String {
+        showingOriginal ? "ORIGINAL" : "HOLD TO SEE ORIGINAL"
     }
 
     private func fitScale(viewport: CGSize) -> CGFloat {
