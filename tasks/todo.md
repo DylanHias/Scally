@@ -277,7 +277,7 @@ iPhone 17 Pro / iOS 26.5, with 1 test executed in the app target.
 ~~**Known limitation:** simulator only.~~ Resolved 2026-09-20: `DEVELOPMENT_TEAM`
 is `UQRXPYHMJ9` (read from the installed provisioning profiles, same team as Listn)
 and signing is enabled. Built, signed and installed to Dylan's iPhone 17 Pro
-(`3F380110-D711-5C7B-9725-2656FCB16BD6`) with automatic provisioning.
+(device id redacted) with automatic provisioning.
 
 **Device build:**
 `xcodebuild -project Scally.xcodeproj -scheme Scally -destination 'platform=iOS,id=<device-id>' -allowProvisioningUpdates build`
