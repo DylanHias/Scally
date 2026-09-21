@@ -236,12 +236,9 @@ struct LicensesView: View {
     }
 
     private let entries = [
-        Entry(title: "ResShift",
-              blurb: "The diffusion architecture and its VQ autoencoder. S-Lab License 1.0, non-commercial.",
-              resource: "ResShift-SLab"),
-        Entry(title: "RSD",
-              blurb: "The one-step distilled student Scally runs. CC BY-NC-SA 4.0, non-commercial and share-alike.",
-              resource: "RSD-CC-BY-NC-SA"),
+        Entry(title: "4xNomosWebPhoto_RealPLKSR",
+              blurb: "The model Scally runs, by Philip Hofmann. CC BY 4.0 - attribution only, commercial use permitted.",
+              resource: "NomosWebPhoto-RealPLKSR-CC-BY-4.0"),
     ]
 
     private func text(_ resource: String) -> String {
@@ -255,7 +252,7 @@ struct LicensesView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 26) {
-                Text("Scally upscales images with a one-step diffusion model distilled from ResShift. Both components are licensed for non-commercial use, which is why Scally is free and has no in-app purchases.")
+                Text("Scally upscales images with a single convolutional model trained on realistic web-photo degradation. It is licensed for any use, including commercial, so long as its author is credited - which is what this screen is for.")
                     .font(.system(size: 12.5))
                     .foregroundStyle(Palette.label(0.55))
 

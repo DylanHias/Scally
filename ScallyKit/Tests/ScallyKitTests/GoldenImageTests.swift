@@ -108,11 +108,13 @@ private func psnr(_ a: LoadedImage, _ b: LoadedImage) -> Double {
     return 10 * log10(255 * 255 / meanSquaredError)
 }
 
-/// Disabled: the diffusion model is stochastic, and its run-to-run variance is
-/// roughly 25x larger than any conversion error, so a golden comparison would
-/// only ever measure noise. The structural checks in ResShiftUpscalerTests and
-/// the reconstruction proof cover what this used to.
-@Test(.disabled("stochastic model - see comment"), arguments: ["portrait", "text", "texture"])
+/// Re-enabled 2026-09-21. This was switched off while the engine was the
+/// one-step diffusion model, whose run-to-run variance is roughly 25x larger
+/// than any conversion error - a golden comparison against it would only ever
+/// have measured noise. RealPLKSR is a plain convolutional network and is
+/// deterministic, so the gate is worth having again, and the references below
+/// were recorded fresh against it.
+@Test(arguments: ["portrait", "text", "texture"])
 func upscaleMatchesGoldenReference(name: String) async throws {
     let source = try writeFixtureImage(named: name)
     defer { try? FileManager.default.removeItem(at: source) }
@@ -121,7 +123,7 @@ func upscaleMatchesGoldenReference(name: String) async throws {
     // lets Core ML schedule across ANE, GPU and CPU as it sees fit. (That was
     // not what broke this test - see `seed(for:)` - but pinning it removes a
     // real source of variance for free, since the fixtures are one tile each.)
-    let pipeline = UpscalePipeline(upscaler: try ResShiftUpscaler(computeUnits: .cpuOnly),
+    let pipeline = UpscalePipeline(upscaler: try CoreMLUpscaler(modelName: "NomosPLKSR", computeUnits: .cpuOnly),
                                    faceRestorer: NoopFaceRestorer())
     let result = try await pipeline.run(source: source, requestedScale: 4) { _ in }
     defer { try? FileManager.default.removeItem(at: result.outputURL) }

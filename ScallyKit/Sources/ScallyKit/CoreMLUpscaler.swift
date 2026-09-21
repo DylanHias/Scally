@@ -15,7 +15,7 @@ public final class CoreMLUpscaler: Upscaler, @unchecked Sendable {
     /// SRVGGNet graph shape, so swapping weights needs no code change.
     public let modelName: String
 
-    public init(modelName: String = "RealESRGANx4", computeUnits: MLComputeUnits = .all) throws {
+    public init(modelName: String = "NomosPLKSR", computeUnits: MLComputeUnits = .all) throws {
         self.modelName = modelName
         guard let url = Bundle.module.url(forResource: modelName, withExtension: "mlmodelc")
                 ?? Bundle.module.url(forResource: modelName, withExtension: "mlpackage") else {

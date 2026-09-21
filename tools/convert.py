@@ -40,6 +40,16 @@ MODELS = {
         arch="rrdb",
         product="NomosWebPhoto",
     ),
+    # Same training data as "nomos", different backbone: RealPLKSR instead of
+    # RRDBNet. 7.4M parameters against 16.7M, and a 17x17 large kernel applied
+    # to a quarter of the channels rather than 23 dense blocks. Pure
+    # convolution, so the ANE should take it.
+    "plksr": dict(
+        url="https://github.com/Phhofm/models/releases/download/4xNomosWebPhoto_RealPLKSR/4xNomosWebPhoto_RealPLKSR.safetensors",
+        weights=ROOT / "tools" / "4xNomosWebPhoto_RealPLKSR.safetensors",
+        arch="realplksr",
+        product="NomosPLKSR",
+    ),
 }
 # Selected by argv when run as a script, by SCALLY_MODEL when imported (pytest
 # puts the test filename in argv[1], which is not a model name).
@@ -209,6 +219,127 @@ def remap_old_esrgan(state):
     return out
 
 
+class Mish(nn.Module):
+    """x * tanh(softplus(x)).
+
+    Written out rather than `nn.Mish` because coremltools has no converter for
+    `aten::mish`. This is the definition, so parity with the reference is exact
+    rather than approximate.
+    """
+
+    def forward(self, x):
+        return x * torch.tanh(nn.functional.softplus(x))
+
+
+class DCCM(nn.Sequential):
+    """Doubled convolutional channel mixer."""
+
+    def __init__(self, dim):
+        super().__init__(
+            nn.Conv2d(dim, dim * 2, 3, 1, 1),
+            Mish(),
+            nn.Conv2d(dim * 2, dim, 3, 1, 1),
+        )
+
+
+class PLKConv2d(nn.Module):
+    """Partial large kernel: a 17x17 convolution over the first quarter of the
+    channels only, the rest passed through untouched.
+
+    Upstream has two forward paths and uses an in-place slice assignment at
+    inference. That cannot be traced, so the split/concatenate path is used
+    unconditionally here - it is the same arithmetic.
+    """
+
+    def __init__(self, dim, kernel_size):
+        super().__init__()
+        self.conv = nn.Conv2d(dim, dim, kernel_size, 1, kernel_size // 2)
+        self.idx = dim
+
+    def forward(self, x):
+        x1, x2 = torch.split(x, [self.idx, x.size(1) - self.idx], dim=1)
+        return torch.cat([self.conv(x1), x2], dim=1)
+
+
+class EA(nn.Module):
+    """Element-wise attention: a learned per-pixel gate."""
+
+    def __init__(self, dim):
+        super().__init__()
+        self.f = nn.Sequential(nn.Conv2d(dim, dim, 3, 1, 1), nn.Sigmoid())
+
+    def forward(self, x):
+        return x * self.f(x)
+
+
+class PLKBlock(nn.Module):
+    """The order here is load-bearing and is not guessable from the weights:
+    mixer, large kernel, attention, refine, normalise, then the skip. A
+    plausible-looking reordering still loads with strict=True and still
+    produces an image - just the wrong one.
+    """
+
+    def __init__(self, dim, kernel_size, pdim, norm_groups, use_ea):
+        super().__init__()
+        self.channel_mixer = DCCM(dim)
+        self.lk = PLKConv2d(pdim, kernel_size)
+        self.attn = EA(dim) if use_ea else nn.Identity()
+        self.refine = nn.Conv2d(dim, dim, 1, 1, 0)
+        self.norm = nn.GroupNorm(norm_groups, dim)
+
+    def forward(self, x):
+        skip = x
+        x = self.channel_mixer(x)
+        x = self.lk(x)
+        x = self.attn(x)
+        x = self.refine(x)
+        x = self.norm(x)
+        return x + skip
+
+
+class RealPLKSR(nn.Module):
+    """https://arxiv.org/abs/2404.11848, as implemented by neosr.
+
+    Defaults are neosr's, which is what `4xNomosWebPhoto_RealPLKSR.yml` asks
+    for: `type: realplksr` with nothing overridden but training-time dropout.
+
+    `feats` is one Sequential so the checkpoint's flat indices line up: 0 is the
+    stem, 1..28 the blocks, 29 a parameterless Dropout2d, 30 the tail. The
+    dropout has no weights but it does occupy an index, and removing it would
+    shift the tail to 29 and break a strict load.
+    """
+
+    def __init__(self, in_ch=3, out_ch=3, dim=64, n_blocks=28, upscaling_factor=4,
+                 kernel_size=17, split_ratio=0.25, use_ea=True, norm_groups=4):
+        super().__init__()
+        self.upscale = upscaling_factor
+        pdim = int(dim * split_ratio)
+        self.feats = nn.Sequential(
+            *([nn.Conv2d(in_ch, dim, 3, 1, 1)]
+              + [PLKBlock(dim, kernel_size, pdim, norm_groups, use_ea)
+                 for _ in range(n_blocks)]
+              + [nn.Dropout2d(0.0)]
+              + [nn.Conv2d(dim, out_ch * upscaling_factor ** 2, 3, 1, 1)])
+        )
+        self.to_img = nn.PixelShuffle(upscaling_factor)
+
+    def forward(self, x):
+        # The global residual is repeat_interleave(x, 16, dim=1), which after
+        # the pixel shuffle is exactly a nearest-neighbour 4x of the input. It
+        # is written as expand+reshape because coremltools handles those and
+        # does not handle repeat_interleave.
+        batch, channels, height, width = x.shape
+        repeats = self.upscale ** 2
+        skip = (x.unsqueeze(2)
+                 .expand(batch, channels, repeats, height, width)
+                 .reshape(batch, channels * repeats, height, width))
+        # Clamped to match the author's own ONNX export. Without it this model
+        # matches that export to 3.5e-1 in the worst pixel; with it, to 6.3e-6.
+        # 1.75% of pixels land outside [0,1] on a random input, so the clamp is
+        # not cosmetic - it is part of the model as published.
+        return self.to_img(self.feats(x) + skip).clamp(0.0, 1.0)
+
+
 def load_model():
     download_weights()
     if WEIGHTS.suffix == ".safetensors":
@@ -217,9 +348,14 @@ def load_model():
     else:
         state = torch.load(WEIGHTS, map_location="cpu", weights_only=True)
     weights = state.get("params") or state.get("params_ema") or state
-    weights = remap_old_esrgan(weights)
-    weights = remap_old_esrgan(weights)
-    model = SRVGGNetCompact() if MODEL["arch"] == "srvgg" else RRDBNet()
+    if MODEL["arch"] == "rrdb":
+        # Only the ESRGAN lineage carries the legacy "model.N." key layout.
+        weights = remap_old_esrgan(weights)
+    model = {
+        "srvgg": SRVGGNetCompact,
+        "rrdb": RRDBNet,
+        "realplksr": RealPLKSR,
+    }[MODEL["arch"]]()
     model.load_state_dict(weights, strict=True)
     model.eval()
     return model

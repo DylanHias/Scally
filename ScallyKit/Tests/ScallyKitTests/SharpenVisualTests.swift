@@ -12,7 +12,7 @@ import CoreML
 
     for intensity in [0.0, 0.45, 0.9] {
         let pipeline = UpscalePipeline(
-            upscaler: try CoreMLUpscaler(modelName: "NomosWebPhoto", computeUnits: .cpuAndGPU),
+            upscaler: try CoreMLUpscaler(modelName: "NomosPLKSR", computeUnits: .cpuAndGPU),
             faceRestorer: NoopFaceRestorer(),
             budget: MemoryBudget(availableBytes: 3_000_000_000),
             sharpener: Sharpener(intensity: intensity, radius: 1.6))

@@ -1,0 +1,24 @@
+4xNomosWebPhoto_RealPLKSR
+Copyright (c) Philip Hofmann (Phhofm)
+https://github.com/Phhofm/models
+
+Licensed under the Creative Commons Attribution 4.0 International License
+(CC BY 4.0). https://creativecommons.org/licenses/by/4.0/
+
+You are free to share and adapt this material for any purpose, including
+commercially, provided you give appropriate credit, provide a link to the
+licence, and indicate if changes were made.
+
+CHANGES MADE BY SCALLY
+The published PyTorch weights were converted to a Core ML package for
+on-device inference on Apple silicon. The conversion casts the weights to
+float16 and traces the network at a fixed 256x256 tile size. The network's
+arithmetic is otherwise unaltered: the converted model matches the author's
+own ONNX export to 6.3e-6 in the worst pixel, and the float16 Core ML package
+matches the float32 PyTorch reference to roughly 1% of output range on
+photographic input.
+
+ARCHITECTURE
+RealPLKSR, from "Partial Large Kernel CNNs for Efficient Super-Resolution"
+(arXiv:2404.11848), as implemented by the neosr project
+(https://github.com/neosr-project/neosr).

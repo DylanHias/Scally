@@ -1,0 +1,122 @@
+name: 4xNomosWebPhoto_RealPLKSR
+model_type: default
+scale: 4
+use_amp: true
+bfloat16: true
+fast_matmul: true
+compile: false
+#manual_seed: 1024
+
+datasets:
+  train:
+    type: paired
+    dataroot_gt: '/home/phips/Documents/datasets/nomosv2/'
+    dataroot_lq: '/home/phips/Documents/datasets/4xnomosrealweb_v3/lr1/'
+    #meta_info: 'datasets/meta_info.txt'
+    io_backend:
+      type: disk
+
+    gt_size: 512 # from 128 to 256 at 385k, 512 at 400k, back to 256 at 407k for enabled additional losses, back to 512 at 428k
+    batch_size: 4 # the number of variants in my dataset,12 , change to 4 at 400k because gt_size increase, back to 12 at 407k, back to 4 at 428k
+    accumulate: 1
+    dataset_enlarge_ratio: 1
+
+    use_hflip: true
+    use_rot: true
+    augmentation: ['none', 'mixup', 'cutmix', 'resizemix', 'cutblur'] # enable cutblur at 407k
+    aug_prob: [0.2, 0.3, 0.2, 0.5, 0.7]
+
+  val:
+    name: val_deg
+    type: single 
+    dataroot_lq: '/home/phips/Documents/datasets/RealLR7_256/'
+    io_backend:
+      type: disk
+
+val:
+  val_freq: 5000 #1000
+  save_img: true
+  tile: -1 # 200
+
+path:
+  pretrain_network_g: '/home/phips/Downloads/4x_realplksr_gan_pretrain.pth'
+  resume_state: ~
+  #strict_load_g: false # do not uncomment, read docs
+
+network_g:
+  type: realplksr
+  #type: realplksr_s
+  dropout: 0.5 # enable at 407k
+
+network_d:
+  type: unet
+
+train:
+  optim_g:
+    type: nadam
+    lr: !!float 3e-4
+    betas: [0.98, 0.99]
+    weight_decay: 0.01
+    decoupled_weight_decay: true
+  optim_d:
+    type: nadam
+    lr: !!float 1e-4
+    betas: [0.98, 0.99]
+    weight_decay: 0.01
+    decoupled_weight_decay: true
+
+  scheduler:
+    type: multisteplr
+    milestones: [60000, 120000]
+    gamma: 0.5
+
+  total_iter: 1000000
+  warmup_iter: 20000
+
+  # losses
+  wavelet_guided: "off" # "disc", "on"
+  mssim_opt:
+    type: mssim
+    loss_weight: 1.0
+  perceptual_opt:
+    type: PerceptualLoss
+    layer_weights:
+      'conv1_2': 0.1
+      'conv2_2': 0.1
+      'conv3_4': 1
+      'conv4_4': 1
+      'conv5_4': 1
+    perceptual_weight: 1.0
+    criterion: huber
+  gan_opt:
+    type: GANLoss
+    gan_type: vanilla
+    loss_weight: 0.1
+  dists_opt: # enable at 290k
+    type: dists
+    loss_weight: 0.5
+  ldl_opt: # enable at 290k
+    type: HuberLoss
+    loss_weight: 1.0
+  ff_opt: # enable at 407k
+    type: focalfrequencyloss
+    loss_weight: 0.5
+  #gw_opt:
+  #  type: gw_loss
+  #  loss_weight: 1.0
+  #  criterion: chc
+
+  match_lq: false
+  color_opt:
+    type: colorloss
+    loss_weight: 1.0
+    criterion: huber
+  luma_opt:
+    type: lumaloss
+    loss_weight: 1.0
+    criterion: huber
+
+logger:
+  print_freq: 100
+  save_checkpoint_freq: 5000 #1000
+  use_tb_logger: true
