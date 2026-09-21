@@ -12,9 +12,8 @@ let package = Package(
             name: "ScallyKit",
             resources: [
                 .copy("Resources/RealESRNet.mlpackage"),
-                .copy("Resources/NomosWebPhoto.mlpackage"),
-                .copy("Resources/NomosPLKSR.mlpackage"),
-                .copy("Resources/MoSR.mlpackage"),
+                .copy("Resources/MoSR_mssim.mlpackage"),
+                .copy("Resources/SPAN_mssim.mlpackage"),
             ]
         ),
         .testTarget(name: "ScallyKitTests", dependencies: ["ScallyKit"])

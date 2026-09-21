@@ -24,8 +24,7 @@ ScallyKit/Sources/ScallyKit/Resources/VQDecoder.mlpackage/
 # diffusion weights alone are 333 MB.
 ScallyKit/Sources/ScallyKit/Resources/*.mlpackage/
 !ScallyKit/Sources/ScallyKit/Resources/RealESRNet.mlpackage/
-!ScallyKit/Sources/ScallyKit/Resources/NomosWebPhoto.mlpackage/
-!ScallyKit/Sources/ScallyKit/Resources/NomosPLKSR.mlpackage/
-!ScallyKit/Sources/ScallyKit/Resources/MoSR.mlpackage/
+!ScallyKit/Sources/ScallyKit/Resources/MoSR_mssim.mlpackage/
+!ScallyKit/Sources/ScallyKit/Resources/SPAN_mssim.mlpackage/
 tools/*.safetensors
 tools/*.pth

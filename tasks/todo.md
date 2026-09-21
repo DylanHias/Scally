@@ -311,6 +311,43 @@ models are refused by the ANE compiler (DAT2 1110 ms/tile, DRCT-L 2208 ms/tile
 against 145 ms), and going larger would have worsened the actual complaint
 rather than fixing it, since the large models available are also GAN-trained.
 
+## Phase 15 — A benchmark, instead of trying models one at a time (2026-09-21)
+Dylan: "before yet again just trying out a model, i want you to benchmark it.
+make sure to use models that are big and small." Fair - the previous four
+swaps were decided on impression.
+
+- [x] **Task 38** — `tools/benchmark_models.py`
+      Scores every bundled package against real photographs. A 1024x1024 crop
+      is chosen by detail (a benchmark run on flat sky measures nothing),
+      downsampled 4x, and each model asked to put it back. Reports ANE and
+      CPU+GPU ms/tile, PSNR, SSIM, and a **detail ratio** - mean absolute
+      Laplacian of output over truth - which is the metric that captures
+      "digitalised": 1.00 is what the camera resolved, above 1.00 is invented.
+      Two degradations are run, clean and realistic, because a Lanczos
+      downsample is nearly the inverse of a Lanczos upsample and flatters
+      plain resampling.
+      **Two flaws found and fixed in my own method:** the low-resolution input
+      was being padded into a 256x256 tile with black, putting a hard edge
+      inside every model's receptive field and producing grid artefacts; and
+      centre crops landed on out-of-focus background. Both were skewing the
+      first run's numbers.
+- [x] **Task 39** — Results, on realistic input
+      | model | ANE | PSNR | SSIM | detail |
+      |---|---|---|---|---|
+      | RealESRNet | 172 ms | **32.28** | **0.8973** | 0.16x |
+      | Lanczos | - | 31.72 | 0.8904 | 0.16x |
+      | MoSR_mssim | 110 ms | 31.36 | 0.8814 | 0.23x |
+      | DRCT-L mssim | 1180 ms | 30.39 | 0.8736 | 0.27x |
+      | SPAN_mssim | 16 ms | 29.79 | 0.8710 | 0.31x |
+      | NomosPLKSR | 170 ms | 29.92 | 0.8455 | **1.33x** |
+      | NomosWebPhoto | 160 ms | 29.08 | 0.8443 | **1.26x** |
+      **Every GAN model sits above 1.00 on detail** - Dylan's complaint,
+      measured. **Size buys nothing:** DRCT-L at 27.6M scores below MoSR at
+      4.3M while being eleven times slower. **DAT2's conversion is broken,**
+      not merely slow: PSNR 5.75, SSIM 0.002, output is garbage.
+      Bundle is now RealESRNet (shipping), MoSR_mssim and SPAN_mssim. The
+      GAN models are gone. App 90 MB -> 44 MB.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),
