@@ -18,6 +18,13 @@ public struct Sharpener: Sendable {
     public static let none = Sharpener(intensity: 0, radius: 0)
     public static let standard = Sharpener(intensity: 0.45, radius: 1.6)
 
+    /// Radius scaled for an upscale factor. Enlarging by 4x widens every edge
+    /// by 4x, so a radius fixed in output pixels lands inside the edge and
+    /// does almost nothing.
+    public static func forUpscale(intensity: Double, scale: Int) -> Sharpener {
+        Sharpener(intensity: intensity, radius: 0.9 * Double(scale))
+    }
+
     public init(intensity: Double, radius: Double) {
         self.intensity = intensity
         self.radius = radius

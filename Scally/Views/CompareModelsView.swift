@@ -92,10 +92,18 @@ struct CompareModelsView: View {
             if let failure = outcome.failure {
                 Text(failure).font(Typography.caption).foregroundStyle(Palette.destructive)
             } else if let image = outcome.image {
-                Image(uiImage: image)
-                    .resizable().scaledToFit()
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: Metrics.control))
+                // A 1:1 centre crop. Fitting the whole 3600px result into a
+                // ~350pt card downsamples it ~3.4x, which destroys exactly the
+                // differences this screen exists to show.
+                GeometryReader { geometry in
+                    let side = geometry.size.width
+                    Image(uiImage: Self.centreCropForDisplay(image, side: side))
+                        .resizable().scaledToFit()
+                        .clipShape(RoundedRectangle(cornerRadius: Metrics.control))
+                }
+                .aspectRatio(1, contentMode: .fit)
+                Text("shown at 1:1 · full result is \(Int(image.size.width))px")
+                    .font(Typography.caption).foregroundStyle(Palette.tertiaryText)
             }
         }
         .padding(12)
@@ -128,7 +136,7 @@ struct CompareModelsView: View {
             do {
                 let pipeline = UpscalePipeline(upscaler: try option.makeUpscaler(),
                                                faceRestorer: NoopFaceRestorer(),
-                                               sharpener: Sharpener(intensity: sharpen, radius: 1.6))
+                                               sharpener: .forUpscale(intensity: sharpen, scale: 4))
                 let result = try await pipeline.run(source: source, requestedScale: 4) { _ in }
                 let elapsed = Date().timeIntervalSince(started)
                 results.append(Outcome(id: option.id, title: option.title,
@@ -149,6 +157,21 @@ struct CompareModelsView: View {
         }
         running = nil
         try? FileManager.default.removeItem(at: source)
+    }
+
+    /// Crops the centre at native resolution so one point maps to one device
+    /// pixel - the only way differences between these models are visible.
+    static func centreCropForDisplay(_ image: UIImage, side: CGFloat) -> UIImage {
+        let pixels = side * UIScreen.main.scale
+        let width = image.size.width * image.scale
+        let height = image.size.height * image.scale
+        let take = min(pixels, width, height)
+        let origin = CGPoint(x: ((width - take) / 2).rounded(),
+                             y: ((height - take) / 2).rounded())
+        guard let cg = image.cgImage?.cropping(
+            to: CGRect(origin: origin, size: CGSize(width: take, height: take))
+        ) else { return image }
+        return UIImage(cgImage: cg, scale: UIScreen.main.scale, orientation: .up)
     }
 
     /// Documents/compare - readable over devicectl for off-device inspection.
