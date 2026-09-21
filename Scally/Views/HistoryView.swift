@@ -11,6 +11,10 @@ struct HistoryView: View {
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \UpscaleRecord.createdAt, order: .reverse) private var records: [UpscaleRecord]
 
+    /// Harness seam. Production always starts at false; `DesignHarness` sets
+    /// it so S1b can be put on screen without four taps through the UI.
+    var startSelecting = false
+
     @State private var isSelecting = false
     @State private var selected: Set<UUID> = []
     @State private var confirmingDelete = false
@@ -41,6 +45,11 @@ struct HistoryView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden()
+        .onAppear {
+            guard startSelecting, !records.isEmpty else { return }
+            isSelecting = true
+            selected = Set(records.prefix(3).map(\.id))
+        }
     }
 
     private var bar: some View {

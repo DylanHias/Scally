@@ -104,6 +104,16 @@ struct DesignHarnessView: View {
             }
         case "settings":
             SettingsView()
+        case "selecting":
+            NavigationStack { HistoryView(startSelecting: true) }
+        case "confirm-clear":
+            SettingsView(startConfirmingClear: true)
+        case "save-failed":
+            NavigationStack {
+                ResultView(pending: DesignHarness.pending(),
+                           result: DesignHarness.result(),
+                           startSaveState: .failed("Your iPhone storage is full."))
+            }
         default:
             ImportView()
         }

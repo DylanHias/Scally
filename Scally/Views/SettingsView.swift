@@ -15,6 +15,9 @@ struct SettingsView: View {
     @AppStorage("appearance") private var appearance = "system"
     @AppStorage("sharpen") private var sharpen = 0.45
 
+    /// Harness seam, as in `HistoryView`.
+    var startConfirmingClear = false
+
     @State private var confirmingClear = false
     @State private var storedBytes = 0
 
@@ -71,7 +74,10 @@ struct SettingsView: View {
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
-            .task { storedBytes = store.totalBytes() }
+            .task {
+                storedBytes = store.totalBytes()
+                if startConfirmingClear { confirmingClear = true }
+            }
         }
     }
 

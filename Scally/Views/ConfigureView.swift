@@ -138,7 +138,7 @@ struct ScalePicker: View {
     }
 
     private func foreground(selected: Bool, available: Bool) -> Color {
-        guard available else { return Palette.label(0.25) }
+        guard available else { return Palette.disabledSegment }
         return selected ? Palette.primaryText : Palette.label(0.56)
     }
 }
@@ -149,19 +149,21 @@ struct ClampNotice: View {
     let text: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .top, spacing: 9) {
             Circle()
                 .strokeBorder(Palette.accent, lineWidth: 1.5)
-                .frame(width: 15, height: 15)
+                .frame(width: 16, height: 16)
                 .padding(.top, 1)
             Text(text)
                 .font(.system(size: 12.5))
-                .foregroundStyle(Palette.label(0.72))
+                .lineSpacing(3)
+                .foregroundStyle(Palette.noticeText)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
         }
-        .padding(13)
-        .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.hairline))
+        .padding(.vertical, 12)
+        .padding(.horizontal, 13)
+        .background(Palette.noticeSurface, in: RoundedRectangle(cornerRadius: 11))
+        .overlay(RoundedRectangle(cornerRadius: 11).strokeBorder(Palette.outline(0.1)))
     }
 }

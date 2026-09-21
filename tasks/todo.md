@@ -227,6 +227,29 @@ theme on every screen but Import, and the launch animation with the new mark.
       rectangle checked against its mirrored band. Verified end to end:
       **29.5x** more change inside the detected face than outside it.
 
+## Phase 12 — All 13 designed screens verified (2026-09-21)
+- [x] **Task 33** — The last four compared — **2 divergences found and fixed**
+      S1b (selecting), S2b (confirm clear), S5 (save failed) and screen 1
+      (Import, empty) put side by side with the design render.
+      1. **S5 carries no INPUT/OUTPUT rows.** The design replaces the metrics
+         with the banner; the build stacked both.
+      2. **The save-failed banner is destructive-tinted, not neutral** - border
+         and fill drawn from the destructive colour at different strengths per
+         theme (45%/12% dark, 35%/7% light), with a destructive ring rather
+         than the amber one the clamp notice uses.
+      Also corrected while checking: the clamp notice's own panel colour
+      (#121215 dark / #F8F6F3 light, a shade off `surface`), its 11 pt radius,
+      and the disabled segment's per-theme alpha.
+      `DesignHarness` gained `selecting`, `confirm-clear` and `save-failed`;
+      Import-empty was captured against a fresh container.
+
+**All 13 designed screens now verified against `docs/design/flow-board/`.**
+Two knowingly unverifiable on this machine: S3's copy says "2x is available"
+only when it is, and the simulator's memory budget leaves neither scale
+available; and Import's ENGINE row reads `NEURAL ENGINE` rather than
+`NEURAL - A19 PRO`, because the simulator reports no recognisable chip. Both
+are data, not layout, and both are correct behaviour.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),

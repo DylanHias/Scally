@@ -30,6 +30,38 @@ enum Palette {
     static let segmentTrack = dynamic(dark: 0x141417, light: 0xEEEEF1)
     static let segmentSelected = dynamic(dark: 0x2A2A2F, light: 0xFFFFFF)
 
+    /// The inline-notice surface (S3's memory clamp). Its own value in both
+    /// themes, a shade off `surface`, so the notice reads as a panel inside the
+    /// screen rather than another card.
+    static let noticeSurface = dynamic(dark: 0x121215, light: 0xF8F6F3)
+
+    /// S5's banner. The design tints border and fill from the destructive
+    /// colour at different strengths per theme, so these cannot be one alpha.
+    static var destructiveBorder: Color { destructiveTint(dark: 0.45, light: 0.35) }
+    static var destructiveWash: Color { destructiveTint(dark: 0.12, light: 0.07) }
+
+    /// Body copy inside a notice: heavier in light than in dark.
+    static var noticeText: Color { labelTint(dark: 0.72, light: 0.85) }
+    /// An unavailable segment in the scale picker.
+    static var disabledSegment: Color { labelTint(dark: 0.24, light: 0.3) }
+    static var bannerText: Color { labelTint(dark: 0.62, light: 0.7) }
+
+    private static func destructiveTint(dark: Double, light: Double) -> Color {
+        Color(UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 212/255, green: 103/255, blue: 92/255, alpha: dark)
+                : UIColor(red: 179/255, green: 57/255, blue: 44/255, alpha: light)
+        })
+    }
+
+    private static func labelTint(dark: Double, light: Double) -> Color {
+        Color(UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 235/255, green: 235/255, blue: 245/255, alpha: dark)
+                : UIColor(red: 60/255, green: 60/255, blue: 67/255, alpha: light)
+        })
+    }
+
     /// A button outline, at the alpha the design names for that button.
     static func outline(_ alpha: Double) -> Color { dynamic(white: alpha) }
 
