@@ -18,3 +18,10 @@ Scally/Resources/VQ*.mlpackage/
 ScallyKit/Sources/ScallyKit/Resources/RSD4x.mlpackage/
 ScallyKit/Sources/ScallyKit/Resources/VQEncoder.mlpackage/
 ScallyKit/Sources/ScallyKit/Resources/VQDecoder.mlpackage/
+
+# Core ML models and source weights: hundreds of MB, and regenerable by the
+# converters in tools/. GitHub rejects anything over 100 MB, and the fused
+# diffusion weights alone are 333 MB.
+ScallyKit/Sources/ScallyKit/Resources/*.mlpackage/
+tools/*.safetensors
+tools/*.pth
