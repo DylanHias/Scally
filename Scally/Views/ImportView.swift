@@ -2,6 +2,13 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
+/// Import, transcribed from the design's screens 1 and 2.
+///
+/// The two states are not the same screen with a list hidden: with no history
+/// the footer states what the engine is and that the network is unused; with
+/// history it states how much is stored locally instead. The design swaps
+/// them, and it is right to - the trust claim earns its place once, and after
+/// that the useful number is the one about the user's own disk.
 struct ImportView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \UpscaleRecord.createdAt, order: .reverse) private var records: [UpscaleRecord]
@@ -20,15 +27,15 @@ struct ImportView: View {
                 Palette.background.ignoresSafeArea()
 
                 if libraryDenied {
-                    LibraryDeniedView { libraryDenied = false }
+                    LibraryDeniedView(onSettings: { showingSettings = true },
+                                      onChooseSpecific: { libraryDenied = false })
                 } else {
                     content
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
-            .sheet(isPresented: $showingSettings) { SettingsView() }
+            .fullScreenCover(isPresented: $showingSettings) { SettingsView() }
             .navigationDestination(item: $pending) { ConfigureView(pending: $0) }
-            .photosPicker(isPresented: .constant(false), selection: $selection)
             .fileImporter(isPresented: $showingFiles,
                           allowedContentTypes: [.image]) { handleFileImport($0) }
             .onChange(of: selection) { _, item in
@@ -42,98 +49,142 @@ struct ImportView: View {
         }
     }
 
-    /// The wordmark lives in the content, not the toolbar: iOS renders toolbar
-    /// items as fixed-width glass capsules, which truncated this to "S...".
-    private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Scally")
-                    .font(Typography.screenTitle)
-                    .foregroundStyle(Palette.primaryText)
-                FieldLabel("ON-DEVICE UPSCALER")
-            }
-            Spacer()
-            Button { showingSettings = true } label: {
-                Image(systemName: "gearshape")
-                    .font(.system(size: 17))
-                    .foregroundStyle(Palette.primaryText)
-            }
-            .accessibilityLabel("Settings")
-        }
-        .padding(.horizontal, Metrics.gutter)
-        .padding(.top, 8)
-        .padding(.bottom, 22)
-    }
-
     private var content: some View {
         VStack(spacing: 0) {
             header
-            actions
-            recent
-            Spacer(minLength: 0)
-            TrustPanel(storedBytes: store.totalBytes())
-        }
-    }
-
-    private var actions: some View {
-        VStack(spacing: 10) {
-            PhotosPicker(selection: $selection, matching: .images, photoLibrary: .shared()) {
-                Text("Choose a photo")
-                    .font(Typography.body.weight(.semibold))
-                    .foregroundStyle(Palette.background)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .background(Palette.primaryText, in: RoundedRectangle(cornerRadius: Metrics.control))
-            }
-
-            HStack(spacing: 10) {
-                SecondaryButton(title: "Paste", systemImage: "doc.on.clipboard", action: pasteImage)
-                SecondaryButton(title: "Files", systemImage: "folder") { showingFiles = true }
-            }
+            chooseRow.padding(.top, 30)
+            secondaryRow.padding(.top, 10)
+            recentHeader.padding(.top, records.isEmpty ? 36 : 32)
+            recentBody
+            footer
         }
         .padding(.horizontal, Metrics.gutter)
-        .padding(.top, 8)
     }
 
-    @ViewBuilder
-    private var recent: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                FieldLabel("RECENT")
+    /// The wordmark lives in the content, not the toolbar: iOS renders toolbar
+    /// items as fixed-width glass capsules, which truncated this to "S...".
+    private var header: some View {
+        HStack(alignment: .lastTextBaseline) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Scally")
+                    .font(Typography.wordmark)
+                    .tracking(Tracking.wordmark)
+                    .foregroundStyle(Palette.primaryText)
+                Text("ON-DEVICE UPSCALER")
+                    .font(Typography.caption)
+                    .tracking(Tracking.subtitle)
+                    .foregroundStyle(Palette.label(0.4))
+            }
+            Spacer()
+            Button("Settings") { showingSettings = true }
+                .font(Typography.navAction)
+                .foregroundStyle(Palette.label(0.56))
+        }
+        .padding(.horizontal, 2)
+        .padding(.top, 14)
+    }
+
+    /// The design's primary action is a surface row with a ringed plus, not a
+    /// filled slab. The filled slab is reserved for Upscale and Save - the two
+    /// actions that commit something.
+    private var chooseRow: some View {
+        PhotosPicker(selection: $selection, matching: .images, photoLibrary: .shared()) {
+            HStack(spacing: 0) {
+                Text("Choose a photo")
+                    .font(Typography.rowPrimary)
+                    .foregroundStyle(Palette.primaryText)
+                Spacer()
+                PlusRing()
+            }
+            .padding(.horizontal, 18)
+            .frame(height: Metrics.primaryRowHeight)
+            .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
+            .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.hairline))
+        }
+    }
+
+    private var secondaryRow: some View {
+        HStack(spacing: 10) {
+            secondary("Paste", action: pasteImage)
+            secondary("Files") { showingFiles = true }
+        }
+    }
+
+    private func secondary(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(Typography.rowLabel)
+                .foregroundStyle(Palette.label(0.72))
+                .frame(maxWidth: .infinity)
+                .frame(height: Metrics.secondaryRowHeight)
+                .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
+                .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.hairline))
+        }
+    }
+
+    private var recentHeader: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                SectionLabel("RECENT")
                 Spacer()
                 if !records.isEmpty {
                     NavigationLink {
                         HistoryView()
                     } label: {
-                        Text("All \(records.count)")
-                            .font(Typography.caption)
-                            .foregroundStyle(Palette.accent)
+                        HStack(spacing: 7) {
+                            Text("All \(records.count)")
+                            Chevron()
+                        }
+                        .font(Typography.bodySmall)
+                        .foregroundStyle(Palette.label(0.56))
                     }
                 }
             }
-
-            if records.isEmpty {
-                Text("No files yet.")
-                    .font(Typography.caption)
-                    .foregroundStyle(Palette.tertiaryText)
-                    .padding(.vertical, 6)
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(records.prefix(3)) { record in
-                        NavigationLink { SavedResultView(record: record) } label: {
-                            RecentRow(record: record, thumbnailURL: store.thumbnailURL(for: record))
-                        }
-                        .buttonStyle(.plain)
-                        if record.id != records.prefix(3).last?.id {
-                            Divider().overlay(Palette.border)
-                        }
-                    }
-                }
-                .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
-                .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.border))
-            }
+            .padding(.bottom, 10)
+            Hairline()
         }
-        .padding(.horizontal, Metrics.gutter)
-        .padding(.top, 26)
+    }
+
+    @ViewBuilder
+    private var recentBody: some View {
+        if records.isEmpty {
+            HStack {
+                Text("No files yet.")
+                    .font(Typography.body)
+                    .foregroundStyle(Palette.label(0.34))
+                Spacer()
+            }
+            .padding(.top, 22)
+            Spacer(minLength: 0)
+        } else {
+            VStack(spacing: 0) {
+                ForEach(records.prefix(3)) { record in
+                    NavigationLink { SavedResultView(record: record) } label: {
+                        RecentRow(record: record, thumbnailURL: store.thumbnailURL(for: record))
+                    }
+                    .buttonStyle(.plain)
+                    Rectangle().fill(Palette.hairlineSoft).frame(height: 1)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var footer: some View {
+        VStack(spacing: 0) {
+            Hairline()
+            VStack(spacing: 6) {
+                if records.isEmpty {
+                    TrustRow(label: "ENGINE", value: DeviceChip.engineLabel)
+                    TrustRow(label: "NETWORK", value: "NOT USED")
+                } else {
+                    TrustRow(label: "STORED LOCALLY",
+                             value: ByteCountFormatter.string(
+                                fromByteCount: Int64(store.totalBytes()), countStyle: .file))
+                }
+            }
+            .padding(.vertical, 14)
+        }
     }
 
     private func pasteImage() {
@@ -151,20 +202,34 @@ struct ImportView: View {
     }
 }
 
-private struct SecondaryButton: View {
-    let title: String
-    let systemImage: String
-    let action: () -> Void
-
+/// The ringed plus on the Choose a photo row: a 26 pt ring at 28% with two
+/// 11 x 1.5 bars, drawn rather than borrowed from SF Symbols so its weight
+/// matches the design instead of the system's.
+struct PlusRing: View {
     var body: some View {
-        Button(action: action) {
-            Label(title, systemImage: systemImage)
-                .font(Typography.body)
-                .foregroundStyle(Palette.primaryText)
-                .frame(maxWidth: .infinity, minHeight: 46)
-                .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.control))
-                .overlay(RoundedRectangle(cornerRadius: Metrics.control).strokeBorder(Palette.border))
+        ZStack {
+            Circle()
+                .strokeBorder(Palette.plusRing, lineWidth: 1)
+                .frame(width: 26, height: 26)
+            Rectangle().fill(Palette.label(0.85)).frame(width: 11, height: 1.5)
+            Rectangle().fill(Palette.label(0.85)).frame(width: 1.5, height: 11)
         }
+    }
+}
+
+/// The design draws its disclosure chevron as a rotated corner, not a glyph.
+struct Chevron: View {
+    var body: some View {
+        Rectangle()
+            .strokeBorder(style: StrokeStyle(lineWidth: 1.5))
+            .frame(width: 6, height: 6)
+            .mask(alignment: .topTrailing) {
+                VStack(spacing: 0) {
+                    Rectangle().frame(height: 1.5)
+                    HStack(spacing: 0) { Spacer(); Rectangle().frame(width: 1.5) }
+                }
+            }
+            .rotationEffect(.degrees(45))
     }
 }
 
@@ -173,79 +238,69 @@ private struct RecentRow: View {
     let thumbnailURL: URL
 
     var body: some View {
-        HStack(spacing: 12) {
-            Group {
-                if let image = UIImage(contentsOfFile: thumbnailURL.path) {
-                    Image(uiImage: image).resizable().scaledToFill()
-                } else {
-                    Rectangle().fill(Palette.surfaceRaised)
-                }
-            }
-            .frame(width: 44, height: 44)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+        HStack(spacing: 13) {
+            Thumbnail(url: thumbnailURL, side: 46, radius: 9)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(record.originalFilename)
-                    .font(Typography.body)
+                    .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(Palette.primaryText)
                     .lineLimit(1)
                 Text(record.dimensionSummary)
-                    .font(Typography.caption.monospaced())
-                    .foregroundStyle(Palette.secondaryText)
+                    .font(Typography.caption)
+                    .foregroundStyle(Palette.label(0.45))
+                    .lineLimit(1)
             }
 
-            Spacer(minLength: 8)
-            ScaleBadge(scale: record.appliedScale)
-            Text(RelativeDate.short(record.createdAt))
-                .font(Typography.caption.monospaced())
-                .foregroundStyle(Palette.tertiaryText)
+            VStack(alignment: .trailing, spacing: 4) {
+                RecentBadge(scale: record.appliedScale)
+                Text(RelativeDate.short(record.createdAt))
+                    .font(Typography.captionTiny)
+                    .foregroundStyle(Palette.label(0.34))
+            }
+            .fixedSize()
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.vertical, 13)
+        .contentShape(Rectangle())
     }
 }
 
-/// The two-column panel that states, plainly, what the app does and does not do.
-private struct TrustPanel: View {
-    let storedBytes: Int
+/// The recent row's badge: mono, on a 10% wash, not the accent.
+struct RecentBadge: View {
+    let scale: Int
 
     var body: some View {
-        VStack(spacing: 14) {
-            HStack(alignment: .top, spacing: 0) {
-                column(label: "ENGINE", value: DeviceChip.engineLabel)
-                column(label: "NETWORK", value: "NOT USED")
-            }
-            if storedBytes > 0 {
-                HStack {
-                    FieldLabel("STORED LOCALLY")
-                    Spacer()
-                    Text(ByteCountFormatter.string(fromByteCount: Int64(storedBytes), countStyle: .file))
-                        .font(Typography.caption.monospaced())
-                        .foregroundStyle(Palette.secondaryText)
-                }
-            }
-        }
-        .padding(Metrics.gutter)
-        .background(Palette.surface)
-        .overlay(alignment: .top) { Rectangle().fill(Palette.border).frame(height: 1) }
+        Text("\(scale)×")
+            .font(.system(size: 11, weight: .semibold).monospaced())
+            .foregroundStyle(Palette.primaryText)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Palette.wash, in: RoundedRectangle(cornerRadius: 5))
     }
+}
 
-    private func column(label: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            FieldLabel(label)
-            Text(value)
-                .font(Typography.caption.monospaced())
-                .foregroundStyle(Palette.primaryText)
+struct Thumbnail: View {
+    let url: URL
+    let side: CGFloat
+    let radius: CGFloat
+
+    var body: some View {
+        Group {
+            if let image = UIImage(contentsOfFile: url.path) {
+                Image(uiImage: image).resizable().scaledToFill()
+            } else {
+                Rectangle().fill(Palette.surfaceRaised)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(width: side, height: side)
+        .clipShape(RoundedRectangle(cornerRadius: radius))
     }
 }
 
 /// The design's trust panel names the silicon - `NEURAL · A17 PRO` - because
 /// "neural engine" alone tells someone nothing about the machine in their hand.
 /// Read from the hardware rather than hardcoded, so it stays true on the next
-/// phone; anything unrecognised falls back to the plain claim rather than
-/// guessing at a chip.
+/// phone; anything unrecognised falls back to the plain claim.
 enum DeviceChip {
     static var engineLabel: String {
         guard let chip else { return "NEURAL ENGINE" }
@@ -277,22 +332,7 @@ enum DeviceChip {
 }
 
 enum RelativeDate {
-    /// The History form: `TODAY 09:38`, `TUE 18:02`, `12 SEP`. A result from
-    /// this morning and one from last Tuesday must not both read as a bare
-    /// time, which is why History does not reuse `short`.
-    static func long(_ date: Date) -> String {
-        let calendar = Calendar.current
-        let time = date.formatted(date: .omitted, time: .shortened)
-        if calendar.isDateInToday(date) { return "TODAY \(time)" }
-        // No YESTERDAY case: it is the longest label of the set and it forced
-        // the row to truncate, while the weekday form already covers the day
-        // before. The design only ever shows TODAY, a weekday, or a date.
-        if let days = calendar.dateComponents([.day], from: date, to: .now).day, days < 7 {
-            return "\(date.formatted(.dateTime.weekday(.abbreviated)).uppercased()) \(time)"
-        }
-        return date.formatted(.dateTime.day().month(.abbreviated)).uppercased()
-    }
-
+    /// Import's compact form: `09:38`, `TUE`, `12 SEP`.
     static func short(_ date: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(date) {
@@ -300,6 +340,19 @@ enum RelativeDate {
         }
         if let days = calendar.dateComponents([.day], from: date, to: .now).day, days < 7 {
             return date.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+        }
+        return date.formatted(.dateTime.day().month(.abbreviated)).uppercased()
+    }
+
+    /// History's form, captioned under each tile: `TODAY 09:38`, `TUE 18:02`,
+    /// `12 SEP`. A grid of thumbnails has no other place to carry a date, so
+    /// unlike Import's list this one always says which day it means.
+    static func long(_ date: Date) -> String {
+        let calendar = Calendar.current
+        let time = date.formatted(date: .omitted, time: .shortened)
+        if calendar.isDateInToday(date) { return "TODAY \(time)" }
+        if let days = calendar.dateComponents([.day], from: date, to: .now).day, days < 7 {
+            return "\(date.formatted(.dateTime.weekday(.abbreviated)).uppercased()) \(time)"
         }
         return date.formatted(.dateTime.day().month(.abbreviated)).uppercased()
     }

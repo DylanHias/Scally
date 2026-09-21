@@ -1,5 +1,15 @@
 import SwiftUI
 
+/// Zoom shared between the comparison and the bar above it: the design puts
+/// the `100%` badge in the top bar, not floating over the photo, so the two
+/// have to agree on a number that only the comparison can compute.
+@MainActor @Observable
+final class CompareState {
+    var percentLabel = "100%"
+    @ObservationIgnored fileprivate var toggle: (() -> Void)?
+    func toggleOneToOne() { toggle?() }
+}
+
 /// Press and hold reveals the original. Chosen over a draggable divider: one
 /// gesture, no conflict with panning, and the whole frame changes at once so
 /// the difference is unmissable.
@@ -10,6 +20,7 @@ import SwiftUI
 struct HoldToCompare: View {
     let before: UIImage
     let after: UIImage
+    let state: CompareState
 
     @State private var showingOriginal = false
     @State private var zoom: CGFloat = 1
@@ -22,7 +33,7 @@ struct HoldToCompare: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color.black
+                Palette.photoWell
 
                 Image(uiImage: showingOriginal ? before : after)
                     .resizable()
@@ -51,33 +62,31 @@ struct HoldToCompare: View {
                     )
 
                 VStack {
-                    HStack {
-                        Spacer()
-                        Button { toggleOneToOne(viewport: geometry.size) } label: {
-                            Text(zoomLabel(viewport: geometry.size))
-                                .font(Typography.badge)
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 10).padding(.vertical, 6)
-                                .background(.ultraThinMaterial, in: Capsule())
-                        }
-                    }
                     Spacer()
                     Text(hint(viewport: geometry.size))
-                        .font(Typography.sectionLabel)
-                        .tracking(0.9)
-                        .foregroundStyle(.white.opacity(showingOriginal ? 0.95 : 0.6))
-                        .padding(.horizontal, 12).padding(.vertical, 7)
-                        .background(.ultraThinMaterial, in: Capsule())
+                        .font(Typography.caption)
+                        .tracking(1.54)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 11)
+                        .background(Color.black.opacity(0.5), in: Capsule())
+                        .overlay(Capsule().strokeBorder(Color.white.opacity(0.22)))
                         .animation(.snappy(duration: 0.12), value: showingOriginal)
                 }
-                .padding(14)
+                .padding(.bottom, 16)
             }
             .contentShape(Rectangle())
             .onLongPressGesture(minimumDuration: 0.08, maximumDistance: .infinity) {
             } onPressingChanged: { pressing in
                 showingOriginal = pressing
             }
-
+            .onAppear {
+                state.toggle = { toggleOneToOne(viewport: geometry.size) }
+                state.percentLabel = zoomLabel(viewport: geometry.size)
+            }
+            .onChange(of: zoom) { _, _ in
+                state.percentLabel = zoomLabel(viewport: geometry.size)
+            }
         }
     }
 
@@ -96,7 +105,6 @@ struct HoldToCompare: View {
         return effective < 0.99 ? "TAP 100% FOR REAL PIXELS" : "HOLD TO SEE ORIGINAL"
     }
 
-    /// Fit-to-frame scale for the output image, in points per image point.
     private func fitScale(viewport: CGSize) -> CGFloat {
         guard after.size.width > 0, after.size.height > 0 else { return 1 }
         return min(viewport.width / after.size.width, viewport.height / after.size.height)
@@ -114,7 +122,6 @@ struct HoldToCompare: View {
         return 1 / (fit * UIScreen.main.scale)
     }
 
-    /// Percentage of true 1:1, where one image pixel covers one device pixel.
     private func zoomLabel(viewport: CGSize) -> String {
         let effective = fitScale(viewport: viewport) * zoom * UIScreen.main.scale
         return "\(Int((effective * 100).rounded()))%"
@@ -133,5 +140,20 @@ struct HoldToCompare: View {
             committedOffset = .zero
         }
     }
+}
 
+/// The `100%` pill in the top bar. Tapping it snaps to actual pixels.
+struct ZoomBadge: View {
+    let state: CompareState
+
+    var body: some View {
+        Button { state.toggleOneToOne() } label: {
+            Text(state.percentLabel)
+                .font(.system(size: 12.5, weight: .semibold).monospaced())
+                .foregroundStyle(Palette.primaryText)
+                .padding(.horizontal, 13)
+                .padding(.vertical, 6)
+                .overlay(Capsule().strokeBorder(Palette.outline(0.24)))
+        }
+    }
 }

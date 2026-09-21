@@ -39,13 +39,13 @@ struct CompareModelsView: View {
                     VStack(alignment: .leading, spacing: 18) {
                         picker
                         if let note {
-                            Text(note).font(Typography.caption).foregroundStyle(Palette.secondaryText)
+                            Text(note).font(Typography.caption).foregroundStyle(Palette.label(0.55))
                         }
                         if let running {
                             HStack(spacing: 8) {
                                 ProgressView().tint(Palette.accent)
                                 Text("running \(running)…").font(Typography.caption)
-                                    .foregroundStyle(Palette.secondaryText)
+                                    .foregroundStyle(Palette.label(0.55))
                             }
                         }
                         ForEach(results) { outcome in card(outcome) }
@@ -84,7 +84,7 @@ struct CompareModelsView: View {
                 Text(outcome.title).font(Typography.body.weight(.semibold))
                     .foregroundStyle(Palette.primaryText)
                 Text(outcome.parameters).font(Typography.caption.monospaced())
-                    .foregroundStyle(Palette.tertiaryText)
+                    .foregroundStyle(Palette.label(0.34))
                 Spacer()
                 Text(String(format: "%.1f s", outcome.seconds))
                     .font(Typography.metric).foregroundStyle(Palette.accent)
@@ -103,12 +103,12 @@ struct CompareModelsView: View {
                 }
                 .aspectRatio(1, contentMode: .fit)
                 Text("shown at 1:1 · full result is \(Int(image.size.width))px")
-                    .font(Typography.caption).foregroundStyle(Palette.tertiaryText)
+                    .font(Typography.caption).foregroundStyle(Palette.label(0.34))
             }
         }
         .padding(12)
         .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
-        .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.border))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.hairline))
     }
 
     private func runAll() async {

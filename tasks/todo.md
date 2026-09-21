@@ -143,6 +143,64 @@ data: launch mark plays and hands over to Import, Settings, History. Built,
 signed and installed to Dylan's iPhone 17 Pro. The icon on the home screen and
 the `NEURAL · A19 PRO` chip label are device-only and unverified by me.
 
+## Phase 10 — Rebuilt against the imported design (2026-09-21)
+**Root cause of the repeated "not the same as the design" reports.** Every screen
+had been built from `docs/design/2026-09-20-flow-board.md`, a *prose extract* of
+the design. Nobody had seen the design itself. The extract was lossy in ways
+that changed structure, not just polish.
+
+- [x] **Task 26** — Import the design into the repository
+      Pulled through the design MCP from claude.ai project
+      `2438fdc0-e5a2-435e-ae04-3cdaa09beebf` into
+      `docs/design/flow-board/`. 28 designed phone frames - 13 screens in both
+      themes, plus the launch animation - rendered to PNG from the source and
+      used as the comparison target. **This is now the source of truth; the
+      prose extract is not.**
+- [x] **Task 27** — Tokens re-derived from the source
+      The extract had the **light theme's background and surface swapped**
+      (#FFFFFF is the background, #F6F6F7 the surface, not the reverse), gave
+      one border value where the design uses 6/7/8/14/16/22/24% per context,
+      and omitted the iOS label bases the design actually uses -
+      `235,235,245` dark and `60,60,67` light - at a dozen distinct alphas.
+- [x] **Task 28** — Icon and launch mark redrawn
+      The mark is **four thin corner rules**, not four groups of solid squares.
+      "Built from squares" in the extract described the geometry, not the
+      drawing. The arithmetic matters: 24% inset + 14% content + 3% border puts
+      the bracket's inner corner at 41%, exactly where the pixel starts, so the
+      viewfinder touches what it closes on. Verified against the design's own
+      render at 0.79/255 mean pixel difference.
+      The animation is **scale-based** (1.5 -> 1 -> 9 for the brackets,
+      0.4 -> 1 -> 4 for the pixel), not translation-based, on the source's own
+      keyframe times, and the app fades in *under* the clearing splash.
+- [x] **Task 29** — Every screen rebuilt
+      Structural corrections, not restyling:
+      1. **History is a two-column thumbnail grid**, captioned per tile. The
+         extract said it was a list, and §6 of it claimed the design had
+         *changed* the spec's grid to a list. The opposite is true.
+      2. **Choose a photo is a surface row with a ringed plus**, not a filled
+         button. The filled slab is reserved for Upscale and Save.
+      3. **Processing** has a 2 pt amber progress bar under the panel; the
+         photo stays visible at 50% behind a 42% scrim.
+      4. **Confirm dialogs are the design's own bottom sheets**, not
+         `confirmationDialog`.
+      5. **Result's `100%` badge lives in the top bar**, not floating on the
+         photo, which needed the zoom state lifted out of `HoldToCompare`.
+      6. Top bars are drawn, not `navigationBar` - iOS 26 glass capsules crush
+         a filename to an ellipsis.
+      7. `ELAPSED 3.4 s` is one run of mono text. An earlier "fix" that split
+         it into a caption and a value was wrong against the design.
+
+**Verified by side-by-side comparison with the design render:** Import (light),
+History (dark), Settings (dark). **Not yet compared:** Configure, Processing,
+Result, S3/S4/S5 edge cases, History selecting and its confirm sheet, the light
+theme on every screen but Import, and the launch animation with the new mark.
+
+**Deliberate deviations from the design, both in Settings:**
+- A `Licenses` row. Both model licences oblige reproducing their notice with
+  the binary. Kept in a *third* card so the design's two cards stay exact.
+- `Sharpening` and `Compare models`, features the design predates, in that
+  same third card.
+
 ## Engine
 
 **One model: `ScallyDiffusion.mlpackage`, 334 MB.** One-step ResShift (RSD),

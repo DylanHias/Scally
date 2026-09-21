@@ -1,6 +1,11 @@
 import SwiftUI
 import ScallyKit
 
+/// Processing, transcribed from the design's screen 4.
+///
+/// The photo stays on screen at half opacity behind a scrim, so the thing
+/// being worked on is still the thing you are looking at, and the percentage
+/// is read against it rather than against an empty panel.
 struct ProcessingView: View {
     let pending: PendingImage
     let scale: Int
@@ -14,41 +19,22 @@ struct ProcessingView: View {
             Palette.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                Image(uiImage: pending.preview)
-                    .resizable().scaledToFit()
-                    .frame(maxWidth: .infinity)
-                    .frame(maxHeight: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: Metrics.card))
-                    .opacity(0.4)
-                    .overlay(alignment: .center) { readout }
-                    .padding(.horizontal, Metrics.gutter)
-                    .padding(.top, 8)
-
-                Spacer(minLength: 12)
-                metrics
-
-                Button("Cancel") {
-                    model.cancel()
-                    dismiss()
+                HStack {
+                    Text("UPSCALING · \(scale)×")
+                        .font(.system(size: 11.5).monospaced())
+                        .tracking(Tracking.subtitle)
+                        .foregroundStyle(Palette.label(0.5))
+                    Spacer()
                 }
-                .font(Typography.body)
-                .foregroundStyle(Palette.primaryText)
-                .frame(maxWidth: .infinity, minHeight: 50)
-                .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.control))
-                .overlay(RoundedRectangle(cornerRadius: Metrics.control).strokeBorder(Palette.border))
                 .padding(.horizontal, Metrics.gutter)
-                .padding(.top, 18)
+                .padding(.top, 10)
 
-                Text("Screen stays awake until it finishes")
-                    .font(Typography.caption)
-                    .foregroundStyle(Palette.tertiaryText)
-                    .padding(.top, 10)
-                    .padding(.bottom, 12)
+                panel
+                readouts
             }
         }
+        .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden()
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Palette.background, for: .navigationBar)
         .task {
             UIApplication.shared.isIdleTimerDisabled = true
             defer { UIApplication.shared.isIdleTimerDisabled = false }
@@ -59,52 +45,78 @@ struct ProcessingView: View {
         }
     }
 
-    private var readout: some View {
-        VStack(spacing: 10) {
-            FieldLabel("UPSCALING · \(scale)×")
+    private var panel: some View {
+        ZStack {
+            Image(uiImage: pending.preview)
+                .resizable().scaledToFill()
+                .opacity(0.5)
+            Color.black.opacity(0.42)
+
             Text("\(Int(model.progress * 100))%")
-                .font(Typography.metricLarge)
+                .font(.system(size: 56, weight: .light).monospaced())
+                .tracking(-1.68)
                 .foregroundStyle(Palette.primaryText)
                 .contentTransition(.numericText())
-            ProgressView(value: model.progress)
-                .tint(Palette.accent)
-                .frame(width: 160)
         }
-        .padding(22)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: Metrics.sheet))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.photoWell)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .padding(.horizontal, Metrics.gutter)
+        .padding(.top, 14)
     }
 
-    private var metrics: some View {
-        VStack(spacing: 12) {
-            // Two readouts, each a caption over a monospaced value, as the
-            // design draws them. They were one run of uppercase caption text,
-            // which lost the type distinction the rest of the app keeps
-            // between a field's name and its number - and uppercased the unit
-            // into `3.4 S`, where the design writes `3.4 s`.
-            HStack(alignment: .top) {
-                readout(label: "ELAPSED", value: String(format: "%.1f s", model.elapsed))
-                Spacer()
-                if let remaining = model.estimatedRemaining {
-                    readout(label: "REMAINING",
-                            value: String(format: "~%.1f s", remaining),
-                            alignment: .trailing)
+    private var readouts: some View {
+        VStack(spacing: 0) {
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Palette.outline(0.14))
+                    Capsule().fill(Palette.accent)
+                        .frame(width: geometry.size.width * max(0, min(1, model.progress)))
                 }
             }
-            MetricRow(label: "OUTPUT",
-                      value: "\(pending.width * scale) × \(pending.height * scale) px")
+            .frame(height: 2)
+
+            HStack {
+                readout(String(format: "ELAPSED %.1f s", model.elapsed), alpha: 0.5)
+                Spacer()
+                if let remaining = model.estimatedRemaining {
+                    readout(String(format: "REMAINING ~%.1f s", remaining), alpha: 0.5)
+                }
+            }
+            .padding(.top, 12)
+
+            HStack {
+                readout("OUTPUT", alpha: 0.34)
+                Spacer()
+                readout("\(pending.width * scale) × \(pending.height * scale) px", alpha: 0.34)
+            }
+            .padding(.top, 6)
+
+            Button {
+                model.cancel()
+                dismiss()
+            } label: {
+                OutlineButtonLabel(title: "Cancel")
+            }
+            .padding(.top, 22)
+
+            Text("Screen stays awake until it finishes")
+                .font(.system(size: 12))
+                .foregroundStyle(Palette.label(0.34))
+                .padding(.top, 12)
+                .padding(.bottom, 6)
         }
         .padding(.horizontal, Metrics.gutter)
+        .padding(.top, 20)
     }
 
-    private func readout(label: String, value: String,
-                         alignment: HorizontalAlignment = .leading) -> some View {
-        VStack(alignment: alignment, spacing: 4) {
-            FieldLabel(label)
-            Text(value)
-                .font(Typography.metric)
-                .foregroundStyle(Palette.primaryText)
-                .contentTransition(.numericText())
-        }
+    /// The design writes these as one run of monospaced text - `ELAPSED 3.4 s`
+    /// - not as a caption above a value. The unit is lower case.
+    private func readout(_ text: String, alpha: Double) -> some View {
+        Text(text)
+            .font(Typography.caption)
+            .foregroundStyle(Palette.label(alpha))
+            .contentTransition(.numericText())
     }
 
     private var finished: Binding<UpscaleResult?> {

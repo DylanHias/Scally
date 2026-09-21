@@ -1,11 +1,13 @@
 import SwiftUI
 import SwiftData
 
-/// Built from the design's tokens rather than a stock `List`.
+/// Settings, transcribed from the design's S2 and S2b.
 ///
-/// The grouped-list default brought its own background, its own separators and
-/// its own type, none of which are this app's, so the one screen that is
-/// nothing but rows was the one screen that did not look like the app.
+/// The design's two cards are reproduced exactly. Everything below them is an
+/// addition and is kept in a third card so the designed part stays the
+/// designed part: Licenses because both model licences oblige reproducing
+/// their notice with the binary, and Sharpening and Compare models because
+/// they are real features the design predates.
 struct SettingsView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
@@ -23,84 +25,75 @@ struct SettingsView: View {
             ZStack {
                 Palette.background.ignoresSafeArea()
 
-                ScrollView {
-                    VStack(spacing: 14) {
-                        storage
-                        sharpening
-                        preferences
-                        footer
+                VStack(spacing: 0) {
+                    HStack {
+                        Button("Back") { dismiss() }
+                            .font(.system(size: 16))
+                            .foregroundStyle(Palette.label(0.7))
+                        Spacer()
                     }
                     .padding(.horizontal, Metrics.gutter)
-                    .padding(.vertical, 12)
+                    .padding(.top, 6)
+
+                    HStack {
+                        Text("Settings")
+                            .font(.system(size: 32, weight: .semibold))
+                            .tracking(-0.8)
+                            .foregroundStyle(Palette.primaryText)
+                        Spacer()
+                    }
+                    .padding(.horizontal, Metrics.gutter)
+                    .padding(.top, 14)
+                    .padding(.bottom, 22)
+
+                    ScrollView {
+                        VStack(spacing: 26) {
+                            storage
+                            preferences
+                            additions
+                            colophon
+                        }
+                        .padding(.horizontal, Metrics.gutter)
+                    }
+                }
+
+                if confirmingClear {
+                    ConfirmSheet(
+                        message: "All \(records.count) results and their \(formatted(storedBytes)) will be removed from Scally.",
+                        detail: "The originals in your Photos library are untouched.",
+                        confirm: "Clear All \(records.count) Results",
+                        onConfirm: {
+                            try? store.deleteAll(context: context)
+                            storedBytes = store.totalBytes()
+                            confirmingClear = false
+                        },
+                        onCancel: { confirmingClear = false })
                 }
             }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Palette.background, for: .navigationBar)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }.tint(Palette.accent)
-                }
-            }
+            .toolbar(.hidden, for: .navigationBar)
             .task { storedBytes = store.totalBytes() }
-            .confirmationDialog("Clear history?", isPresented: $confirmingClear,
-                                titleVisibility: .visible) {
-                Button("Clear All \(records.count) Results", role: .destructive) {
-                    try? store.deleteAll(context: context)
-                    storedBytes = store.totalBytes()
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("All \(records.count) results and their \(formatted(storedBytes)) will be removed from Scally. The originals in your Photos library are untouched.")
-            }
         }
     }
 
     private var storage: some View {
         SettingsCard {
-            SettingsRow(label: "Storage used", value: formatted(storedBytes))
+            SettingsRow(label: "Storage used", value: formatted(storedBytes), mono: true)
             SettingsDivider()
-            SettingsRow(label: "Results kept", value: "\(records.count)")
+            SettingsRow(label: "Results kept", value: "\(records.count)", mono: true)
             SettingsDivider()
             Button { confirmingClear = true } label: {
                 HStack {
                     Text("Clear history")
-                        .font(Typography.body)
-                        .foregroundStyle(records.isEmpty ? Palette.tertiaryText : Palette.destructive)
+                        .font(.system(size: 16))
+                        .foregroundStyle(records.isEmpty ? Palette.label(0.3) : Palette.destructive)
                     Spacer()
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 13)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 15)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .disabled(records.isEmpty)
-        }
-    }
-
-    private var sharpening: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            SettingsCard {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Sharpening").font(Typography.body).foregroundStyle(Palette.primaryText)
-                        Spacer()
-                        Text(sharpen < 0.01 ? "OFF" : String(format: "%.2f", sharpen))
-                            .font(Typography.metric)
-                            .foregroundStyle(Palette.secondaryText)
-                    }
-                    Slider(value: $sharpen, in: 0...1.2, step: 0.05)
-                        .tint(Palette.accent)
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 12)
-            }
-
-            Text("Applied after upscaling. It cannot invent detail, but it raises edge contrast, which is what reads as sharp. Too much produces halos.")
-                .font(Typography.caption)
-                .foregroundStyle(Palette.tertiaryText)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 4)
         }
     }
 
@@ -113,10 +106,27 @@ struct SettingsView: View {
                     Text("Dark").tag("dark")
                 }
             } label: {
-                SettingsRow(label: "Appearance", value: appearanceName, chevron: true)
+                SettingsRow(label: "Appearance", value: appearanceName)
             }
             SettingsDivider()
             SettingsRow(label: "Save location", value: "Photos")
+        }
+    }
+
+    private var additions: some View {
+        SettingsCard {
+            VStack(alignment: .leading, spacing: 9) {
+                HStack {
+                    Text("Sharpening").font(.system(size: 16)).foregroundStyle(Palette.primaryText)
+                    Spacer()
+                    Text(sharpen < 0.01 ? "OFF" : String(format: "%.2f", sharpen))
+                        .font(.system(size: 14).monospaced())
+                        .foregroundStyle(Palette.label(0.56))
+                }
+                Slider(value: $sharpen, in: 0...1.2, step: 0.05).tint(Palette.accent)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 13)
             SettingsDivider()
             NavigationLink { LicensesView() } label: {
                 SettingsRow(label: "Licenses", value: "", chevron: true)
@@ -130,18 +140,20 @@ struct SettingsView: View {
         }
     }
 
-    private var footer: some View {
-        VStack(spacing: 10) {
-            Text("Runs entirely on this iPhone. Nothing is uploaded. No account. No internet.")
-                .font(Typography.caption)
-                .foregroundStyle(Palette.secondaryText)
-                .multilineTextAlignment(.center)
+    private var colophon: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Scally never connects to the internet. There is no account, no analytics, no upload, and nothing to pay for. Your photos and results stay in this app's own storage until you delete them.")
+                .font(.system(size: 12.5))
+                .lineSpacing(4)
+                .foregroundStyle(Palette.label(0.42))
                 .fixedSize(horizontal: false, vertical: true)
-
-            FieldLabel("VERSION \(appVersion) · BUILD \(buildNumber)")
+            Text("VERSION \(appVersion) · BUILD \(buildNumber)")
+                .font(Typography.caption)
+                .foregroundStyle(Palette.label(0.28))
         }
-        .padding(.top, 14)
-        .padding(.bottom, 8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
+        .padding(.bottom, 20)
     }
 
     private var appearanceName: String {
@@ -165,50 +177,49 @@ struct SettingsView: View {
     }
 }
 
-/// One bordered surface holding a run of rows - the app's card, not the
-/// system's inset group.
+/// The design's settings card: surface, a 7% border - a step softer than the
+/// 8% used elsewhere - and rows that rule against each other, not against the
+/// card edge.
 struct SettingsCard<Content: View>: View {
     @ViewBuilder let content: Content
 
     var body: some View {
         VStack(spacing: 0) { content }
             .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
-            .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.border))
+            .overlay(RoundedRectangle(cornerRadius: Metrics.card)
+                .strokeBorder(Palette.outline(0.07)))
     }
 }
 
 struct SettingsDivider: View {
     var body: some View {
-        Divider().overlay(Palette.border).padding(.leading, 14)
+        Rectangle().fill(Palette.outline(0.07)).frame(height: 1)
     }
 }
 
-/// Label left, monospaced value right - the same shape as `MetricRow`, in the
-/// sentence case the design uses for settings rather than mono capitals.
 struct SettingsRow: View {
     let label: String
     let value: String
+    var mono = false
     var chevron = false
 
     var body: some View {
         HStack(spacing: 10) {
             Text(label)
-                .font(Typography.body)
+                .font(.system(size: 16))
                 .foregroundStyle(Palette.primaryText)
             Spacer(minLength: 12)
             if !value.isEmpty {
                 Text(value)
-                    .font(Typography.metric)
-                    .foregroundStyle(Palette.secondaryText)
+                    .font(mono ? .system(size: 14).monospaced() : .system(size: 15))
+                    .foregroundStyle(Palette.label(mono ? 0.56 : 0.5))
             }
             if chevron {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Palette.tertiaryText)
+                Chevron().foregroundStyle(Palette.label(0.3))
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 13)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 15)
         .contentShape(Rectangle())
     }
 }
@@ -245,17 +256,20 @@ struct LicensesView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 26) {
                 Text("Scally upscales images with a one-step diffusion model distilled from ResShift. Both components are licensed for non-commercial use, which is why Scally is free and has no in-app purchases.")
-                    .font(Typography.caption)
-                    .foregroundStyle(Palette.secondaryText)
+                    .font(.system(size: 12.5))
+                    .foregroundStyle(Palette.label(0.55))
 
                 ForEach(entries) { entry in
                     VStack(alignment: .leading, spacing: 10) {
-                        Text(entry.title).font(Typography.screenTitle)
+                        Text(entry.title)
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(Palette.primaryText)
                         Text(entry.blurb)
-                            .font(Typography.caption)
-                            .foregroundStyle(Palette.secondaryText)
+                            .font(.system(size: 12.5))
+                            .foregroundStyle(Palette.label(0.55))
                         Text(text(entry.resource))
                             .font(.system(size: 11, design: .monospaced))
+                            .foregroundStyle(Palette.label(0.7))
                             .textSelection(.enabled)
                     }
                 }
@@ -266,5 +280,69 @@ struct LicensesView: View {
         .background(Palette.background)
         .navigationTitle("Licenses")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+/// S4. States what the app can and cannot see, rather than apologising.
+struct LibraryDeniedView: View {
+    let onSettings: () -> Void
+    let onChooseSpecific: () -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .lastTextBaseline) {
+                Text("Scally")
+                    .font(Typography.wordmark)
+                    .tracking(Tracking.wordmark)
+                    .foregroundStyle(Palette.primaryText)
+                Spacer()
+                Button("Settings", action: onSettings)
+                    .font(Typography.navAction)
+                    .foregroundStyle(Palette.label(0.56))
+            }
+            .padding(.horizontal, 2)
+            .padding(.top, 14)
+
+            Spacer()
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("No access to your library")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Palette.primaryText)
+
+                Text("Scally can only see photos you give it. Nothing is read in the background and nothing is uploaded either way.")
+                    .font(.system(size: 13))
+                    .lineSpacing(3)
+                    .foregroundStyle(Palette.label(0.55))
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Button(action: onSettings) { FilledButtonLabel(title: "Open Settings") }
+                    .padding(.top, 4)
+                Button(action: onChooseSpecific) {
+                    OutlineButtonLabel(title: "Choose specific photos", height: 54, size: 16)
+                }
+            }
+            .padding(18)
+            .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
+            .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.hairline))
+
+            Text("SETTINGS → PRIVACY → PHOTOS → SCALLY")
+                .font(Typography.captionTiny)
+                .tracking(Tracking.sectionLabel)
+                .foregroundStyle(Palette.label(0.34))
+                .padding(.top, 18)
+
+            Spacer()
+
+            VStack(spacing: 3) {
+                Text("Runs entirely on this iPhone.")
+                Text("Nothing is uploaded. No account. No internet.")
+            }
+            .font(.system(size: 12))
+            .foregroundStyle(Palette.label(0.34))
+            .multilineTextAlignment(.center)
+            .padding(.bottom, 10)
+        }
+        .padding(.horizontal, Metrics.gutter)
     }
 }

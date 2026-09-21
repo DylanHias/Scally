@@ -42,22 +42,35 @@ final class AppReadiness {
     }
 }
 
-/// The launch mark, then the app. Import is not in the hierarchy at all until
-/// the mark has left the screen, which is what the design means by "the splash
-/// clears before the app is shown".
+/// The launch mark, then the app.
+///
+/// The design brings Import in *under* the clearing splash rather than after
+/// it: `sc-app` runs from 1.90 s to 2.24 s while `sc-splash` fades over the
+/// same stretch. The mark itself is already gone by 1.70 s, so Import still
+/// never appears behind it.
 struct RootView: View {
     @State private var readiness = AppReadiness()
     @State private var launched = false
+    @State private var appOpacity: Double = 0
+    @State private var appOffset: CGFloat = 6
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            Palette.background.ignoresSafeArea()
 
-            if launched {
-                ImportView().transition(.opacity)
-            } else {
+            ImportView()
+                .opacity(appOpacity)
+                .offset(y: appOffset)
+
+            if !launched {
                 LaunchView(readiness: readiness) {
-                    withAnimation(.easeOut(duration: 0.2)) { launched = true }
+                    // cubic-bezier(.2,.7,.2,1) over 0.34 s, the source's sc-app.
+                    withAnimation(.timingCurve(0.2, 0.7, 0.2, 1, duration: 0.34)) {
+                        appOpacity = 1
+                        appOffset = 0
+                    }
+                } onFinish: {
+                    launched = true
                 }
             }
         }

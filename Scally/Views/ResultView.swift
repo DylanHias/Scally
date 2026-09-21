@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import ScallyKit
 
+/// Result, transcribed from the design's screen 5 and its S5 edge case.
 struct ResultView: View {
     let pending: PendingImage
     let result: UpscaleResult
@@ -10,6 +11,7 @@ struct ResultView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var afterImage: UIImage?
     @State private var saveState: SaveState = .idle
+    @State private var compare = CompareState()
 
     enum SaveState: Equatable { case idle, saving, saved, failed(String) }
 
@@ -20,79 +22,65 @@ struct ResultView: View {
             Palette.background.ignoresSafeArea()
 
             VStack(spacing: 0) {
-                if let afterImage {
-                    HoldToCompare(before: pending.preview, after: afterImage)
-                        .clipShape(RoundedRectangle(cornerRadius: Metrics.card))
-                        .padding(.horizontal, Metrics.gutter)
-                } else {
-                    ProgressView().tint(Palette.accent).frame(maxHeight: .infinity)
-                }
+                ScreenBar(leading: "Discard",
+                          title: "\(pending.filename) · \(result.appliedScale)×",
+                          leadingColor: Palette.primaryText,
+                          titleAlpha: 0.6) { dismiss() }
+                    trailing: { ZoomBadge(state: compare) }
+                    .padding(.vertical, 8)
 
-                if case .failed(let message) = saveState {
-                    SaveFailureBanner(message: message)
-                        .padding(.horizontal, Metrics.gutter)
-                        .padding(.top, 12)
+                Group {
+                    if let afterImage {
+                        HoldToCompare(before: pending.preview, after: afterImage, state: compare)
+                    } else {
+                        Palette.photoWell.overlay { ProgressView().tint(Palette.accent) }
+                    }
                 }
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .padding(.horizontal, 18)
+                .padding(.top, 12)
 
-                if result.wasClamped {
-                    Text("Upscaled at \(result.appliedScale)×. \(result.requestedScale)× needed more memory than this iPhone had free.")
-                        .font(Typography.caption)
-                        .foregroundStyle(Palette.secondaryText)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, Metrics.gutter)
-                        .padding(.top, 10)
-                }
-
-                metrics
-                actions
+                footer
             }
         }
-        .navigationTitle("\(pending.filename) · \(result.appliedScale)×")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Palette.background, for: .navigationBar)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Discard", role: .destructive) { dismiss() }
-                    .tint(Palette.secondaryText)
-            }
-        }
+        .toolbar(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden()
         .task { afterImage = UIImage(contentsOfFile: result.outputURL.path) }
     }
 
-    private var metrics: some View {
-        VStack(spacing: 10) {
-            MetricRow(label: "INPUT",
-                      value: "\(pending.width) × \(pending.height) · \(formatted(pending.byteCount))")
-            MetricRow(label: "OUTPUT",
-                      value: "\(result.outputWidth) × \(result.outputHeight) · \(formatted(outputBytes))")
-        }
-        .padding(.horizontal, Metrics.gutter)
-        .padding(.top, 14)
-    }
-
-    private var actions: some View {
-        HStack(spacing: 10) {
-            Button(action: save) {
-                Text(saveLabel)
-                    .font(Typography.body.weight(.semibold))
-                    .foregroundStyle(Palette.background)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .background(Palette.primaryText, in: RoundedRectangle(cornerRadius: Metrics.control))
+    private var footer: some View {
+        VStack(spacing: 0) {
+            if case .failed(let message) = saveState {
+                SaveFailureBanner(message: message).padding(.bottom, 14)
             }
-            .disabled(saveState == .saving || saveState == .saved)
 
-            ShareLink(item: result.outputURL) {
-                Text("Share")
-                    .font(Typography.body)
-                    .foregroundStyle(Palette.primaryText)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.control))
-                    .overlay(RoundedRectangle(cornerRadius: Metrics.control).strokeBorder(Palette.border))
+            if result.wasClamped {
+                ClampNotice(text: "Upscaled at \(result.appliedScale)×. \(result.requestedScale)× needed more memory than this iPhone had free.")
+                    .padding(.bottom, 14)
+            }
+
+            DetailRow(label: "INPUT",
+                      value: "\(pending.width) × \(pending.height) · \(formatted(pending.byteCount))",
+                      labelAlpha: 0.45, valueSize: 11.5)
+                .padding(.bottom, 6)
+            DetailRow(label: "OUTPUT",
+                      value: "\(result.outputWidth) × \(result.outputHeight) · \(formatted(outputBytes))",
+                      labelAlpha: 0.45, valueSize: 11.5)
+                .padding(.bottom, 16)
+
+            HStack(spacing: 10) {
+                Button(action: save) { FilledButtonLabel(title: saveLabel) }
+                    .disabled(saveState == .saving || saveState == .saved)
+
+                ShareLink(item: result.outputURL) {
+                    OutlineButtonLabel(title: "Share", height: 54, alpha: 0.22, size: 16)
+                        .frame(width: 96)
+                }
             }
         }
         .padding(.horizontal, Metrics.gutter)
         .padding(.top, 16)
-        .padding(.bottom, 12)
+        .padding(.bottom, 14)
     }
 
     private var saveLabel: String {
@@ -132,21 +120,30 @@ struct ResultView: View {
     }
 }
 
-private struct SaveFailureBanner: View {
+/// S5. The design keeps the destructive colour for the headline only - the
+/// explanation is ordinary text, because the result is not lost.
+struct SaveFailureBanner: View {
     let message: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Couldn't save to Photos")
-                .font(Typography.body.weight(.semibold))
-                .foregroundStyle(Palette.destructive)
-            Text("\(message) The result is still here.")
-                .font(Typography.caption)
-                .foregroundStyle(Palette.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
+        HStack(alignment: .top, spacing: 10) {
+            Circle()
+                .strokeBorder(Palette.accent, lineWidth: 1.5)
+                .frame(width: 15, height: 15)
+                .padding(.top, 2)
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Couldn't save to Photos")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Palette.primaryText)
+                Text("\(message) The result is still here — free up space and try again.")
+                    .font(.system(size: 12.5))
+                    .foregroundStyle(Palette.label(0.55))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(Palette.destructive.opacity(0.10), in: RoundedRectangle(cornerRadius: Metrics.control))
+        .padding(13)
+        .background(Palette.surface, in: RoundedRectangle(cornerRadius: Metrics.card))
+        .overlay(RoundedRectangle(cornerRadius: Metrics.card).strokeBorder(Palette.hairline))
     }
 }

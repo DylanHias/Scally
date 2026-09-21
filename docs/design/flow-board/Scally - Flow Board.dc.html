@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><style>body{margin:0;background:#EEECE8;font-family:-apple-system,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}a{color:#1a1a1a}a:hover{color:#000}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-direction:column;gap:40px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:12px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 12px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;width:fit-content}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:26px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}.cap{font:500 10px/1 ui-monospace,Menlo,monospace;letter-spacing:.09em;text-transform:uppercase}.mono{font-family:ui-monospace,"SF Mono",Menlo,monospace}
+@keyframes sc-frame{0%{transform:scale(1.5);opacity:0}6%{transform:scale(1.5);opacity:1}21%{transform:scale(1);opacity:1}35%{transform:scale(1);opacity:1}50%{transform:scale(9);opacity:0}100%{transform:scale(9);opacity:0}}
+@keyframes sc-pixel{0%{transform:scale(.4);opacity:0}12%{transform:scale(.4);opacity:0}22%{transform:scale(1);opacity:1}35%{transform:scale(1);opacity:1}48%{transform:scale(4);opacity:0}100%{transform:scale(4);opacity:0}}
+@keyframes sc-app{0%{opacity:0;transform:translateY(6px)}56%{opacity:0;transform:translateY(6px)}66%{opacity:1;transform:translateY(0)}100%{opacity:1;transform:translateY(0)}}
+@keyframes sc-splash{0%{opacity:1}50%{opacity:1}56%{opacity:0}100%{opacity:0}}
+@keyframes sc-chrome{0%{opacity:0}60%{opacity:0}74%{opacity:1}100%{opacity:1}}
+@media (prefers-reduced-motion: reduce){[data-launch] *{animation:none !important;opacity:1 !important;transform:none !important}}</style></helmet>
+
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Launch animation</span></div>
+<p style="margin:0 0 26px;max-width:740px;font:13px/1.65 system-ui,sans-serif;color:rgba(0,0,0,.55)">The mark from <a class="dv-oid" href="#3c">3c</a> doesn't perform — it resolves, then gets out of the way. Brackets land from slightly open, hold for a beat with the pixel, then keep opening until they pass the screen edge. The splash clears before the app is shown — Import never appears behind the mark. 2.2 s end to end, and nothing about it is a loading spinner: it plays once while the app is actually cold-starting, and is cut short the moment the UI is ready. Looping here so you can watch it.</p>
+<div class="dv-opts" style="flex-direction:row;flex-wrap:wrap;gap:34px">
+
+<div class="dv-opt" id="4a">
+<div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a><strong style="color:#1a1a1a;font-weight:600">Frame opens</strong> — the viewfinder becomes the screen.</div>
+<div class="dv-card" style="background:#0F0F11;border-color:rgba(255,255,255,.08);padding:26px;display:flex;gap:26px">
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">Cold start — dark</div>
+<div data-launch="dark" style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;font-size:390px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000;z-index:6"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600;position:relative;z-index:6"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 20px;min-height:0;animation:sc-app 3.4s cubic-bezier(.2,.7,.2,1) infinite">
+<div style="flex:none;padding:14px 2px 0;display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:28px;font-weight:600;letter-spacing:-.025em">Scally</span><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">ON-DEVICE UPSCALER</span></div><span style="font-size:14px;color:rgba(235,235,245,.56);padding-bottom:3px">Settings</span></div>
+<div style="flex:none;margin-top:30px;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px"><span style="font-size:16px;font-weight:600">Choose a photo</span><span style="position:relative;width:26px;height:26px;border-radius:13px;border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:11px;height:1.5px;background:rgba(245,245,247,.85)"></span><span style="position:absolute;width:1.5px;height:11px;background:rgba(245,245,247,.85)"></span></span></div>
+<div style="flex:none;margin-top:10px;display:flex;gap:10px"><div style="flex:1;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(235,235,245,.72)">Paste</div><div style="flex:1;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(235,235,245,.72)">Files</div></div>
+<div style="flex:none;margin-top:36px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)"><span class="mono" style="font-size:10px;letter-spacing:.14em;color:rgba(235,235,245,.34)">RECENT</span></div>
+<div style="flex:1"></div>
+<div style="flex:none;padding:14px 0;display:flex;flex-direction:column;gap:6px;border-top:1px solid rgba(255,255,255,.08)"><div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(235,235,245,.34)">ENGINE</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.5)">NEURAL · A17 PRO</span></div><div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(235,235,245,.34)">NETWORK</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.5)">NOT USED</span></div></div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center;position:relative;z-index:6"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+<div style="position:absolute;inset:0;z-index:5;pointer-events:none">
+<div style="position:absolute;inset:0;background:#0B0B0C;animation:sc-splash 3.4s ease-out infinite"></div>
+<div style="position:absolute;left:50%;top:50%;width:0.44em;height:0.44em;margin:-0.22em 0 0 -0.22em;font-size:390px;animation:sc-frame 3.4s cubic-bezier(.3,.8,.25,1) infinite">
+<div style="position:absolute;left:0;top:0;width:26%;height:26%;border-left:0.013em solid #F5F5F7;border-top:0.013em solid #F5F5F7;border-top-left-radius:0.016em"></div>
+<div style="position:absolute;right:0;top:0;width:26%;height:26%;border-right:0.013em solid #F5F5F7;border-top:0.013em solid #F5F5F7;border-top-right-radius:0.016em"></div>
+<div style="position:absolute;left:0;bottom:0;width:26%;height:26%;border-left:0.013em solid #F5F5F7;border-bottom:0.013em solid #F5F5F7;border-bottom-left-radius:0.016em"></div>
+<div style="position:absolute;right:0;bottom:0;width:26%;height:26%;border-right:0.013em solid #F5F5F7;border-bottom:0.013em solid #F5F5F7;border-bottom-right-radius:0.016em"></div>
+</div>
+<div style="position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:4px;background:#E2A45E;animation:sc-pixel 3.4s cubic-bezier(.3,.8,.25,1) infinite"></div>
+</div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">Cold start — light</div>
+<div data-launch="light" style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;font-size:390px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000;z-index:6"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600;position:relative;z-index:6"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 20px;min-height:0;animation:sc-app 3.4s cubic-bezier(.2,.7,.2,1) infinite">
+<div style="flex:none;padding:14px 2px 0;display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:28px;font-weight:600;letter-spacing:-.025em">Scally</span><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.5)">ON-DEVICE UPSCALER</span></div><span style="font-size:14px;color:rgba(60,60,67,.62);padding-bottom:3px">Settings</span></div>
+<div style="flex:none;margin-top:30px;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px"><span style="font-size:16px;font-weight:600">Choose a photo</span><span style="position:relative;width:26px;height:26px;border-radius:13px;border:1px solid rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:11px;height:1.5px;background:#0B0B0C"></span><span style="position:absolute;width:1.5px;height:11px;background:#0B0B0C"></span></span></div>
+<div style="flex:none;margin-top:10px;display:flex;gap:10px"><div style="flex:1;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(60,60,67,.75)">Paste</div><div style="flex:1;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(60,60,67,.75)">Files</div></div>
+<div style="flex:none;margin-top:36px;padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:10px;letter-spacing:.14em;color:rgba(60,60,67,.4)">RECENT</span></div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:flex-start;padding-top:22px"><span style="font-size:14px;color:rgba(60,60,67,.42)">No files yet.</span></div>
+<div style="flex:none;padding:14px 0;display:flex;flex-direction:column;gap:6px;border-top:1px solid rgba(0,0,0,.08)"><div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(60,60,67,.4)">ENGINE</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.6)">NEURAL · A17 PRO</span></div><div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(60,60,67,.4)">NETWORK</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.6)">NOT USED</span></div></div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center;position:relative;z-index:6"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+<div style="position:absolute;inset:0;z-index:5;pointer-events:none">
+<div style="position:absolute;inset:0;background:#FFFFFF;animation:sc-splash 3.4s ease-out infinite"></div>
+<div style="position:absolute;left:50%;top:50%;width:0.44em;height:0.44em;margin:-0.22em 0 0 -0.22em;font-size:390px;animation:sc-frame 3.4s cubic-bezier(.3,.8,.25,1) infinite">
+<div style="position:absolute;left:0;top:0;width:26%;height:26%;border-left:0.013em solid #0B0B0C;border-top:0.013em solid #0B0B0C;border-top-left-radius:0.016em"></div>
+<div style="position:absolute;right:0;top:0;width:26%;height:26%;border-right:0.013em solid #0B0B0C;border-top:0.013em solid #0B0B0C;border-top-right-radius:0.016em"></div>
+<div style="position:absolute;left:0;bottom:0;width:26%;height:26%;border-left:0.013em solid #0B0B0C;border-bottom:0.013em solid #0B0B0C;border-bottom-left-radius:0.016em"></div>
+<div style="position:absolute;right:0;bottom:0;width:26%;height:26%;border-right:0.013em solid #0B0B0C;border-bottom:0.013em solid #0B0B0C;border-bottom-right-radius:0.016em"></div>
+</div>
+<div style="position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:4px;background:#E2A45E;animation:sc-pixel 3.4s cubic-bezier(.3,.8,.25,1) infinite"></div>
+</div>
+</div></div></div>
+
+<div style="flex:none;width:250px;display:flex;flex-direction:column;gap:14px;padding-top:26px">
+<div class="cap" style="color:rgba(245,245,247,.45)">Beats</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:12px"><span class="mono" style="flex:none;width:52px;font-size:11px;color:rgba(235,235,245,.34)">0.00s</span><span style="font-size:12.5px;line-height:1.5;color:rgba(235,235,245,.72)">Black. Brackets appear 50% open.</span></div>
+<div style="display:flex;gap:12px"><span class="mono" style="flex:none;width:52px;font-size:11px;color:rgba(235,235,245,.34)">0.70s</span><span style="font-size:12.5px;line-height:1.5;color:rgba(235,235,245,.72)">They close to resting size; the amber pixel lands.</span></div>
+<div style="display:flex;gap:12px"><span class="mono" style="flex:none;width:52px;font-size:11px;color:rgba(235,235,245,.34)">1.20s</span><span style="font-size:12.5px;line-height:1.5;color:rgba(235,235,245,.72)">Hold. This is the only moment the logo is itself.</span></div>
+<div style="display:flex;gap:12px"><span class="mono" style="flex:none;width:52px;font-size:11px;color:rgba(235,235,245,.34)">1.70s</span><span style="font-size:12.5px;line-height:1.5;color:rgba(235,235,245,.72)">Brackets keep opening past the edge, pixel scales out.</span></div>
+<div style="display:flex;gap:12px"><span class="mono" style="flex:none;width:52px;font-size:11px;color:rgba(235,235,245,.34)">1.90s</span><span style="font-size:12.5px;line-height:1.5;color:rgba(235,235,245,.72)">Splash clears. Only then does Import fade up 6 px.</span></div>
+</div>
+<div style="margin-top:8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);font-size:11.5px;line-height:1.55;color:rgba(235,235,245,.42)">No spinner, no progress, no sound. If the app is warm it skips to the last beat. Honours Reduce Motion by showing the import screen immediately.</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “slow the hold beat” · “make the brackets sweep out instead of scaling” · “show it as a filmstrip for the App Store page”</p>
+</section>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Icon</span></div>
+<p style="margin:0 0 26px;max-width:740px;font:13px/1.65 system-ui,sans-serif;color:rgba(0,0,0,.55)">A viewfinder closing on one pixel, built from squares so it survives 29 px. One fixed appearance, shown on a light and a dark ground, then at 60 px and 29 px. Amber is the same accent the progress bar uses.</p>
+<div class="dv-opts" style="flex-direction:row;flex-wrap:wrap;gap:34px">
+
+<div class="dv-opt" id="3c">
+<div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a><strong style="color:#1a1a1a;font-weight:600">Frame</strong> — a viewfinder closing on one pixel. The zoom reading.</div>
+<div class="dv-card" style="padding:26px;display:flex;gap:26px;align-items:flex-end;background:#EFEFEE">
+<div style="position:relative;width:180px;height:180px;font-size:180px;border-radius:22.5%;background:#111113;box-shadow:0 8px 22px rgba(0,0,0,.22)"><div style="position:absolute;left:24%;top:24%;width:14%;height:14%;border-left:0.03em solid #F5F5F7;border-top:0.03em solid #F5F5F7;border-top-left-radius:0.035em"></div><div style="position:absolute;right:24%;top:24%;width:14%;height:14%;border-right:0.03em solid #F5F5F7;border-top:0.03em solid #F5F5F7;border-top-right-radius:0.035em"></div><div style="position:absolute;left:24%;bottom:24%;width:14%;height:14%;border-left:0.03em solid #F5F5F7;border-bottom:0.03em solid #F5F5F7;border-bottom-left-radius:0.035em"></div><div style="position:absolute;right:24%;bottom:24%;width:14%;height:14%;border-right:0.03em solid #F5F5F7;border-bottom:0.03em solid #F5F5F7;border-bottom-right-radius:0.035em"></div><div style="position:absolute;left:41%;top:41%;width:18%;height:18%;background:#E2A45E;border-radius:0.018em"></div></div>
+<div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+<div style="position:relative;width:60px;height:60px;font-size:60px;border-radius:22.5%;background:#111113"><div style="position:absolute;left:24%;top:24%;width:14%;height:14%;border-left:0.03em solid #F5F5F7;border-top:0.03em solid #F5F5F7;border-top-left-radius:0.035em"></div><div style="position:absolute;right:24%;top:24%;width:14%;height:14%;border-right:0.03em solid #F5F5F7;border-top:0.03em solid #F5F5F7;border-top-right-radius:0.035em"></div><div style="position:absolute;left:24%;bottom:24%;width:14%;height:14%;border-left:0.03em solid #F5F5F7;border-bottom:0.03em solid #F5F5F7;border-bottom-left-radius:0.035em"></div><div style="position:absolute;right:24%;bottom:24%;width:14%;height:14%;border-right:0.03em solid #F5F5F7;border-bottom:0.03em solid #F5F5F7;border-bottom-right-radius:0.035em"></div><div style="position:absolute;left:41%;top:41%;width:18%;height:18%;background:#E2A45E;border-radius:0.018em"></div></div>
+<div style="position:relative;width:29px;height:29px;font-size:29px;border-radius:22.5%;background:#111113"><div style="position:absolute;left:24%;top:24%;width:14%;height:14%;border-left:0.03em solid #F5F5F7;border-top:0.03em solid #F5F5F7;border-top-left-radius:0.035em"></div><div style="position:absolute;right:24%;top:24%;width:14%;height:14%;border-right:0.03em solid #F5F5F7;border-top:0.03em solid #F5F5F7;border-top-right-radius:0.035em"></div><div style="position:absolute;left:24%;bottom:24%;width:14%;height:14%;border-left:0.03em solid #F5F5F7;border-bottom:0.03em solid #F5F5F7;border-bottom-left-radius:0.035em"></div><div style="position:absolute;right:24%;bottom:24%;width:14%;height:14%;border-right:0.03em solid #F5F5F7;border-bottom:0.03em solid #F5F5F7;border-bottom-right-radius:0.035em"></div><div style="position:absolute;left:41%;top:41%;width:18%;height:18%;background:#E2A45E;border-radius:0.018em"></div></div>
+</div>
+</div>
+<div class="dv-card" style="padding:26px;display:flex;gap:20px;align-items:center;background:#17171A;border-color:rgba(255,255,255,.08)">
+<div style="position:relative;width:84px;height:84px;font-size:84px;border-radius:22.5%;background:#111113"><div style="position:absolute;left:24%;top:24%;width:14%;height:14%;border-left:0.03em solid #F5F5F7;border-top:0.03em solid #F5F5F7;border-top-left-radius:0.035em"></div><div style="position:absolute;right:24%;top:24%;width:14%;height:14%;border-right:0.03em solid #F5F5F7;border-top:0.03em solid #F5F5F7;border-top-right-radius:0.035em"></div><div style="position:absolute;left:24%;bottom:24%;width:14%;height:14%;border-left:0.03em solid #F5F5F7;border-bottom:0.03em solid #F5F5F7;border-bottom-left-radius:0.035em"></div><div style="position:absolute;right:24%;bottom:24%;width:14%;height:14%;border-right:0.03em solid #F5F5F7;border-bottom:0.03em solid #F5F5F7;border-bottom-right-radius:0.035em"></div><div style="position:absolute;left:41%;top:41%;width:18%;height:18%;background:#E2A45E;border-radius:0.018em"></div></div>
+<span style="font-size:26px;font-weight:600;letter-spacing:-.025em;color:#F5F5F7">Scally</span>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “try it amber on black instead” · “show it on a home screen next to real apps” · “put the mark in the app header”</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Scally — the flow</span></div>
+<p style="margin:0 0 26px;max-width:740px;font:13px/1.65 system-ui,sans-serif;color:rgba(0,0,0,.55)">Import → configure → process → result. Numbers stated plainly while there is still a decision to make; the photo taking the whole screen once there is something to look at. The “before” is a genuine 240×240 JPEG re-encoded twice and blown back up, so every comparison here is real. History, settings and the edge cases are in <a class="dv-oid" href="#1d">1d</a>.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a><strong style="color:#1a1a1a;font-weight:600">Scally</strong> — the five screens of the linear path, dark and light.</div>
+
+<div class="dv-card" style="background:#0F0F11;border-color:rgba(255,255,255,.08);padding:26px">
+<div class="cap" style="color:rgba(245,245,247,.38);margin-bottom:18px">Dark</div>
+<div style="display:flex;gap:26px;align-items:flex-start">
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">1 · Import — empty</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 20px;min-height:0">
+<div style="flex:none;padding:14px 2px 0;display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:28px;font-weight:600;letter-spacing:-.025em">Scally</span><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">ON-DEVICE UPSCALER</span></div><span style="font-size:14px;color:rgba(235,235,245,.56);padding-bottom:3px">Settings</span></div>
+<div style="flex:none;margin-top:30px;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px"><span style="font-size:16px;font-weight:600">Choose a photo</span><span style="position:relative;width:26px;height:26px;border-radius:13px;border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:11px;height:1.5px;background:rgba(245,245,247,.85)"></span><span style="position:absolute;width:1.5px;height:11px;background:rgba(245,245,247,.85)"></span></span></div>
+<div style="flex:none;margin-top:10px;display:flex;gap:10px">
+<div style="flex:1;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(235,235,245,.72)">Paste</div>
+<div style="flex:1;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(235,235,245,.72)">Files</div>
+</div>
+<div style="flex:none;margin-top:36px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)"><span class="mono" style="font-size:10px;letter-spacing:.14em;color:rgba(235,235,245,.34)">RECENT</span></div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:flex-start;padding-top:22px"><span style="font-size:14px;color:rgba(235,235,245,.34)">No files yet.</span></div>
+<div style="flex:none;padding:14px 0;display:flex;flex-direction:column;gap:6px;border-top:1px solid rgba(255,255,255,.08)">
+<div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(235,235,245,.34)">ENGINE</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.5)">NEURAL · A17 PRO</span></div>
+<div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(235,235,245,.34)">NETWORK</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.5)">NOT USED</span></div>
+</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">2 · Import — with history</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 20px;min-height:0">
+<div style="flex:none;padding:14px 2px 0;display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:28px;font-weight:600;letter-spacing:-.025em">Scally</span><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">ON-DEVICE UPSCALER</span></div><span style="font-size:14px;color:rgba(235,235,245,.56);padding-bottom:3px">Settings</span></div>
+<div style="flex:none;margin-top:30px;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+<span style="font-size:16px;font-weight:600">Choose a photo</span>
+<span style="position:relative;width:26px;height:26px;border-radius:13px;border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:11px;height:1.5px;background:rgba(245,245,247,.85)"></span><span style="position:absolute;width:1.5px;height:11px;background:rgba(245,245,247,.85)"></span></span>
+</div>
+<div style="flex:none;margin-top:10px;display:flex;gap:10px">
+<div style="flex:1;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(235,235,245,.72)">Paste</div>
+<div style="flex:1;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(235,235,245,.72)">Files</div>
+</div>
+<div style="flex:none;margin-top:32px;display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)"><span class="mono" style="font-size:10px;letter-spacing:.14em;color:rgba(235,235,245,.34)">RECENT</span><span style="display:flex;align-items:center;gap:7px;font-size:13px;color:rgba(235,235,245,.56)">All 14<span style="width:6px;height:6px;border-right:1.5px solid currentColor;border-top:1.5px solid currentColor;transform:rotate(45deg)"></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;min-height:0">
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06)"><img src="img/selfie-thumb.jpg" alt="" style="width:46px;height:46px;border-radius:9px;object-fit:cover;display:block"><div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font-size:15px;font-weight:500">IMG_4471.JPG</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.45)">240×240 → 960×960</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="mono" style="font-size:11px;font-weight:600;background:rgba(255,255,255,.1);padding:2px 6px;border-radius:5px">4×</span><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">09:38</span></div></div></a>
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06)"><img src="img/headshot-thumb.jpg" alt="" style="width:46px;height:46px;border-radius:9px;object-fit:cover;display:block"><div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font-size:15px;font-weight:500">team-photo.jpg</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.45)">334×500 → 668×1000</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="mono" style="font-size:11px;font-weight:600;background:rgba(255,255,255,.1);padding:2px 6px;border-radius:5px">2×</span><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">TUE</span></div></div></a>
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06)"><img src="img/massage-thumb.jpg" alt="" style="width:46px;height:46px;border-radius:9px;object-fit:cover;display:block"><div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font-size:15px;font-weight:500">WA0042.jpg</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.45)">167×250 → 668×1000</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="mono" style="font-size:11px;font-weight:600;background:rgba(255,255,255,.1);padding:2px 6px;border-radius:5px">4×</span><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">12 SEP</span></div></div></a>
+</div>
+<div style="flex:none;padding:14px 0;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(235,235,245,.34)">STORED LOCALLY</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.5)">48.2 MB</span></div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">3 · Configure — inline on the photo</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 12px"><span style="font-size:16px;color:rgba(235,235,245,.7)">Back</span><span class="mono" style="font-size:11.5px;letter-spacing:.06em;color:rgba(235,235,245,.5)">IMG_4471.JPG</span><span style="width:40px"></span></div>
+<div style="flex:1;margin:0 20px;border-radius:20px;overflow:hidden;background:#141417;min-height:0"><img src="img/selfie-before.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+<div style="flex:none;padding:18px 20px 0;display:flex;flex-direction:column">
+<div style="display:flex;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:3px;gap:3px">
+<span class="mono" style="flex:1;text-align:center;padding:12px 0;border-radius:10px;font-size:15px;font-weight:500;color:rgba(235,235,245,.56)">2×</span>
+<span class="mono" style="flex:1;text-align:center;padding:12px 0;border-radius:10px;font-size:15px;font-weight:600;background:#2A2A2F">4×</span>
+</div>
+<div style="margin-top:16px;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">INPUT</span><span class="mono" style="font-size:12.5px">240 × 240 px · 38 KB</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">OUTPUT</span><span class="mono" style="font-size:12.5px;font-weight:600">960 × 960 px · ~1.1 MB</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">ESTIMATE</span><span class="mono" style="font-size:12.5px">6 s · on device</span></div>
+</div>
+<div style="margin-top:18px;background:#F5F5F7;color:#0B0B0C;border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Upscale</div>
+<div style="margin-top:12px;text-align:center;font-size:11.5px;color:rgba(235,235,245,.34);padding-bottom:6px">Detail is reconstructed, not invented. Faces stay as they are.</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">4 · Processing</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#000;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000;z-index:3"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600;z-index:2"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;padding:10px 20px 0"><span class="mono" style="font-size:11.5px;letter-spacing:.1em;color:rgba(235,235,245,.5)">UPSCALING · 4×</span></div>
+<div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;min-height:0;margin:14px 20px 0;border-radius:20px;overflow:hidden;background:#141417">
+<img src="img/selfie-before.jpg" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.5;display:block;position:absolute;inset:0">
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.42)"></div>
+<div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:8px">
+<span class="mono" style="font-size:56px;font-weight:300;letter-spacing:-.03em">58%</span>
+</div>
+</div>
+<div style="flex:none;padding:20px 20px 0">
+<div style="height:2px;background:rgba(255,255,255,.14);border-radius:2px;overflow:hidden"><div style="width:58%;height:100%;background:#E2A45E"></div></div>
+<div style="display:flex;justify-content:space-between;margin-top:12px"><span class="mono" style="font-size:11px;color:rgba(235,235,245,.5)">ELAPSED 3.4 s</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.5)">REMAINING ~2.6 s</span></div>
+<div style="display:flex;justify-content:space-between;margin-top:6px"><span class="mono" style="font-size:11px;color:rgba(235,235,245,.34)">OUTPUT</span><span class="mono" style="font-size:11px;color:rgba(235,235,245,.34)">960 × 960 px</span></div>
+<div style="margin-top:22px;border:1px solid rgba(255,255,255,.16);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">Cancel</div>
+<div style="margin-top:12px;text-align:center;font-size:12px;color:rgba(235,235,245,.34);padding-bottom:6px">Screen stays awake until it finishes</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.5)"></span></div>
+</div></div></div>
+
+<div id="r-dark" style="flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin:60px">
+<div class="cap" style="color:rgba(245,245,247,.45)">5 · Result — press and hold</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#000;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000;z-index:4"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:8px 20px"><span style="font-size:16px">Discard</span><span class="mono" style="font-size:11.5px;letter-spacing:.06em;color:rgba(235,235,245,.6)">IMG_4471 · 4×</span><span style="border:1px solid rgba(255,255,255,.24);border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:600;font-family:ui-monospace,Menlo,monospace">100%</span></div>
+<div style="flex:1;position:relative;margin:12px 18px 0;border-radius:20px;overflow:hidden;background:#141417;min-height:0">
+<img src="img/selfie-after.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+<div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:0 0 16px"><span class="mono" style="font-size:11px;letter-spacing:.14em;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.22);padding:11px 20px;border-radius:24px">HOLD TO SEE ORIGINAL</span></div>
+</div>
+<div style="flex:none;padding:16px 20px 0;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;padding-bottom:6px"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.45)">INPUT</span><span class="mono" style="font-size:11.5px;color:rgba(235,235,245,.7)">240 × 240 · 38 KB</span></div>
+<div style="display:flex;justify-content:space-between;padding-bottom:16px"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.45)">OUTPUT</span><span class="mono" style="font-size:11.5px;color:rgba(235,235,245,.7)">960 × 960 · 1.1 MB</span></div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;background:#F5F5F7;color:#0B0B0C;border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Save to Photos</div>
+<div style="width:96px;border:1px solid rgba(255,255,255,.22);border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">Share</div>
+</div>
+</div>
+<div style="flex:none;height:26px;margin-top:14px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+</div></div>
+
+<div class="dv-card" style="background:#FBFBFA;padding:26px">
+<div class="cap" style="color:rgba(0,0,0,.38);margin-bottom:18px">Light</div>
+<div style="display:flex;gap:26px;align-items:flex-start">
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">1 · Import — empty</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 20px;min-height:0">
+<div style="flex:none;padding:14px 2px 0;display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:28px;font-weight:600;letter-spacing:-.025em">Scally</span><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.5)">ON-DEVICE UPSCALER</span></div><span style="font-size:14px;color:rgba(60,60,67,.62);padding-bottom:3px">Settings</span></div>
+<div style="flex:none;margin-top:30px;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+<span style="font-size:16px;font-weight:600">Choose a photo</span>
+<span style="position:relative;width:26px;height:26px;border-radius:13px;border:1px solid rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:11px;height:1.5px;background:#0B0B0C"></span><span style="position:absolute;width:1.5px;height:11px;background:#0B0B0C"></span></span>
+</div>
+<div style="flex:none;margin-top:10px;display:flex;gap:10px">
+<div style="flex:1;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(60,60,67,.75)">Paste</div>
+<div style="flex:1;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(60,60,67,.75)">Files</div>
+</div>
+<div style="flex:none;margin-top:36px;padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:10px;letter-spacing:.14em;color:rgba(60,60,67,.4)">RECENT</span></div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:flex-start;padding-top:22px"><span style="font-size:14px;color:rgba(60,60,67,.42)">No files yet.</span></div>
+<div style="flex:none;padding:14px 0;display:flex;flex-direction:column;gap:6px;border-top:1px solid rgba(0,0,0,.08)">
+<div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(60,60,67,.4)">ENGINE</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.6)">NEURAL · A17 PRO</span></div>
+<div style="display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(60,60,67,.4)">NETWORK</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.6)">NOT USED</span></div>
+</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">2 · Import — with history</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 20px;min-height:0">
+<div style="flex:none;padding:14px 2px 0;display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:5px"><span style="font-size:28px;font-weight:600;letter-spacing:-.025em">Scally</span><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.5)">ON-DEVICE UPSCALER</span></div><span style="font-size:14px;color:rgba(60,60,67,.62);padding-bottom:3px">Settings</span></div>
+<div style="flex:none;margin-top:30px;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 18px">
+<span style="font-size:16px;font-weight:600">Choose a photo</span>
+<span style="position:relative;width:26px;height:26px;border-radius:13px;border:1px solid rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:11px;height:1.5px;background:#0B0B0C"></span><span style="position:absolute;width:1.5px;height:11px;background:#0B0B0C"></span></span>
+</div>
+<div style="flex:none;margin-top:10px;display:flex;gap:10px">
+<div style="flex:1;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(60,60,67,.75)">Paste</div>
+<div style="flex:1;background:#F6F6F7;border:1px solid rgba(0,0,0,.08);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(60,60,67,.75)">Files</div>
+</div>
+<div style="flex:none;margin-top:32px;display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:10px;letter-spacing:.14em;color:rgba(60,60,67,.4)">RECENT</span><span style="display:flex;align-items:center;gap:7px;font-size:13px;color:rgba(60,60,67,.62)">All 14<span style="width:6px;height:6px;border-right:1.5px solid currentColor;border-top:1.5px solid currentColor;transform:rotate(45deg)"></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;min-height:0">
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(0,0,0,.07)"><img src="img/selfie-thumb.jpg" alt="" style="width:46px;height:46px;border-radius:9px;object-fit:cover;display:block"><div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font-size:15px;font-weight:500">IMG_4471.JPG</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.55)">240×240 → 960×960</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="mono" style="font-size:11px;font-weight:600;background:rgba(0,0,0,.07);padding:2px 6px;border-radius:5px">4×</span><span class="mono" style="font-size:10px;color:rgba(60,60,67,.42)">09:38</span></div></div></a>
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(0,0,0,.07)"><img src="img/headshot-thumb.jpg" alt="" style="width:46px;height:46px;border-radius:9px;object-fit:cover;display:block"><div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font-size:15px;font-weight:500">team-photo.jpg</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.55)">334×500 → 668×1000</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="mono" style="font-size:11px;font-weight:600;background:rgba(0,0,0,.07);padding:2px 6px;border-radius:5px">2×</span><span class="mono" style="font-size:10px;color:rgba(60,60,67,.42)">TUE</span></div></div></a>
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;gap:13px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(0,0,0,.07)"><img src="img/massage-thumb.jpg" alt="" style="width:46px;height:46px;border-radius:9px;object-fit:cover;display:block"><div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="font-size:15px;font-weight:500">WA0042.jpg</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.55)">167×250 → 668×1000</span></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="mono" style="font-size:11px;font-weight:600;background:rgba(0,0,0,.07);padding:2px 6px;border-radius:5px">4×</span><span class="mono" style="font-size:10px;color:rgba(60,60,67,.42)">12 SEP</span></div></div></a>
+</div>
+<div style="flex:none;padding:14px 0;border-top:1px solid rgba(0,0,0,.08);display:flex;justify-content:space-between"><span class="mono" style="font-size:11px;color:rgba(60,60,67,.4)">STORED LOCALLY</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.6)">48.2 MB</span></div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">3 · Configure — inline on the photo</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 12px"><span style="font-size:16px;color:rgba(60,60,67,.75)">Back</span><span class="mono" style="font-size:11.5px;letter-spacing:.06em;color:rgba(60,60,67,.55)">IMG_4471.JPG</span><span style="width:40px"></span></div>
+<div style="flex:1;margin:0 20px;border-radius:20px;overflow:hidden;background:#F2F2F4;min-height:0"><img src="img/selfie-before.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+<div style="flex:none;padding:18px 20px 0;display:flex;flex-direction:column">
+<div style="display:flex;background:#EEEEF1;border-radius:13px;padding:3px;gap:3px">
+<span class="mono" style="flex:1;text-align:center;padding:12px 0;border-radius:10px;font-size:15px;font-weight:500;color:rgba(60,60,67,.62)">2×</span>
+<span class="mono" style="flex:1;text-align:center;padding:12px 0;border-radius:10px;font-size:15px;font-weight:600;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.14)">4×</span>
+</div>
+<div style="margin-top:16px;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.45)">INPUT</span><span class="mono" style="font-size:12.5px">240 × 240 px · 38 KB</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.45)">OUTPUT</span><span class="mono" style="font-size:12.5px;font-weight:600">960 × 960 px · ~1.1 MB</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.45)">ESTIMATE</span><span class="mono" style="font-size:12.5px">6 s · on device</span></div>
+</div>
+<div style="margin-top:18px;background:#0B0B0C;color:#FFFFFF;border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Upscale</div>
+<div style="margin-top:12px;text-align:center;font-size:11.5px;color:rgba(60,60,67,.5);padding-bottom:6px">Detail is reconstructed, not invented. Faces stay as they are.</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">4 · Processing</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000;z-index:3"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;padding:10px 20px 0"><span class="mono" style="font-size:11.5px;letter-spacing:.1em;color:rgba(60,60,67,.6)">UPSCALING · 4×</span></div>
+<div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;min-height:0;margin:14px 20px 0;border-radius:18px;overflow:hidden;background:#F2F2F4">
+<img src="img/selfie-before.jpg" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.5;display:block;position:absolute;inset:0">
+<div style="position:absolute;inset:0;background:rgba(255,255,255,.42)"></div>
+<div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:8px">
+<span class="mono" style="font-size:56px;font-weight:300;letter-spacing:-.03em">58%</span>
+</div>
+</div>
+<div style="flex:none;padding:20px 20px 0">
+<div style="height:2px;background:rgba(0,0,0,.12);border-radius:2px;overflow:hidden"><div style="width:58%;height:100%;background:#A8641F"></div></div>
+<div style="display:flex;justify-content:space-between;margin-top:12px"><span class="mono" style="font-size:11px;color:rgba(60,60,67,.6)">ELAPSED 3.4 s</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.6)">REMAINING ~2.6 s</span></div>
+<div style="display:flex;justify-content:space-between;margin-top:6px"><span class="mono" style="font-size:11px;color:rgba(60,60,67,.42)">OUTPUT</span><span class="mono" style="font-size:11px;color:rgba(60,60,67,.42)">960 × 960 px</span></div>
+<div style="margin-top:22px;border:1px solid rgba(0,0,0,.16);border-radius:14px;height:52px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">Cancel</div>
+<div style="margin-top:12px;text-align:center;font-size:12px;color:rgba(60,60,67,.5);padding-bottom:6px">Screen stays awake until it finishes</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div id="r-light" style="flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin:60px">
+<div class="cap" style="color:rgba(0,0,0,.45)">5 · Result — press and hold</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000;z-index:4"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:8px 20px"><span style="font-size:16px">Discard</span><span class="mono" style="font-size:11.5px;letter-spacing:.06em;color:rgba(60,60,67,.6)">IMG_4471 · 4×</span><span style="border:1px solid rgba(0,0,0,.2);border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:600;font-family:ui-monospace,Menlo,monospace">100%</span></div>
+<div style="flex:1;position:relative;margin:12px 18px 0;border-radius:20px;overflow:hidden;background:#EFEFF1;min-height:0">
+<img src="img/selfie-after.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+<div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:0 0 16px"><span class="mono" style="font-size:11px;letter-spacing:.14em;color:#fff;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.22);padding:11px 20px;border-radius:24px">HOLD TO SEE ORIGINAL</span></div>
+</div>
+<div style="flex:none;padding:16px 20px 0;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;padding-bottom:6px"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.45)">INPUT</span><span class="mono" style="font-size:11.5px;color:rgba(60,60,67,.75)">240 × 240 · 38 KB</span></div>
+<div style="display:flex;justify-content:space-between;padding-bottom:16px"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.45)">OUTPUT</span><span class="mono" style="font-size:11.5px;color:rgba(60,60,67,.75)">960 × 960 · 1.1 MB</span></div>
+<div style="display:flex;gap:10px">
+<div style="flex:1;background:#0B0B0C;color:#FFFFFF;border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Save to Photos</div>
+<div style="width:96px;border:1px solid rgba(0,0,0,.16);border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">Share</div>
+</div>
+</div>
+<div style="flex:none;height:26px;margin-top:14px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+</div></div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “make <a class="dv-oid" href="#2a">2a</a> tappable end to end” · “the result screen still needs a zoomed 1:1 state — add it to <a class="dv-oid" href="#2a">2a</a>” · “redraw <a class="dv-oid" href="#1d">1d</a> in 2a's idiom”</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Shared screens</span></div>
+<p style="margin:0 0 26px;max-width:740px;font:13px/1.65 system-ui,sans-serif;color:rgba(0,0,0,.55)">History, settings, and the three moments the app has to be honest. They sit outside the linear path and are reached from it.</p>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1d">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a><strong style="color:#1a1a1a;font-weight:600">Shared</strong> — history, settings, and the three edge cases.</div>
+
+<div class="dv-card" style="background:#0F0F11;border-color:rgba(255,255,255,.08);padding:26px">
+<div class="cap" style="color:rgba(245,245,247,.38);margin-bottom:18px">Dark</div>
+<div style="display:flex;gap:26px;align-items:flex-start">
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">S1 · History</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0"><span style="font-size:16px;color:rgba(235,235,245,.7)">Back</span><span style="font-size:16px;color:rgba(235,235,245,.7)">Select</span></div>
+<div style="flex:none;padding:14px 20px 18px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">History</span></div>
+<div style="flex:1;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start;min-height:0">
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">TODAY 09:38</span></div></a>
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">TUE 18:02</span></div></a>
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">12 SEP</span></div></a>
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">11 SEP</span></div></a>
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">9 SEP</span></div></a>
+<a href="#r-dark" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">9 SEP</span></div></a>
+</div>
+<div style="flex:none;padding:16px 20px 10px;text-align:center"><span class="mono" style="font-size:11px;color:rgba(235,235,245,.34)">14 RESULTS · 48.2 MB ON THIS IPHONE</span></div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">S1b · History — selecting</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0"><span style="font-size:16px;color:rgba(235,235,245,.7)">Select All</span><span style="font-size:16px;font-weight:600;color:#F5F5F7">Cancel</span></div>
+<div style="flex:none;padding:14px 20px 18px;display:flex;align-items:baseline;gap:10px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">3 selected</span></div>
+<div style="flex:1;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start;min-height:0">
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A;box-shadow:inset 0 0 0 3px #F5F5F7"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#F5F5F7;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">TODAY 09:38</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">TUE 18:02</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A;box-shadow:inset 0 0 0 3px #F5F5F7"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#F5F5F7;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">12 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A;box-shadow:inset 0 0 0 3px #F5F5F7"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#F5F5F7;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">11 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">9 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">9 SEP</span></div>
+</div>
+<div style="flex:none;margin:14px 20px 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between"><span style="height:44px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#F5F5F7">Share</span><span class="mono" style="font-size:10.5px;letter-spacing:.08em;color:rgba(235,235,245,.34)">3 ITEMS · 9.1 MB</span><span style="height:44px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#D4675C">Delete</span></div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">S1c · History — confirm delete</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0"><span style="font-size:16px;color:rgba(235,235,245,.7)">Select All</span><span style="font-size:16px;font-weight:600;color:#F5F5F7">Cancel</span></div>
+<div style="flex:none;padding:14px 20px 18px;display:flex;align-items:baseline;gap:10px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">3 selected</span></div>
+<div style="flex:1;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start;min-height:0">
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A;box-shadow:inset 0 0 0 3px #F5F5F7"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#F5F5F7;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">TODAY 09:38</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">TUE 18:02</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A;box-shadow:inset 0 0 0 3px #F5F5F7"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#F5F5F7;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">12 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A;box-shadow:inset 0 0 0 3px #F5F5F7"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#F5F5F7;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#0B0B0C;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">11 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">9 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#17171A"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(235,235,245,.34)">9 SEP</span></div>
+</div>
+<div style="flex:none;margin:14px 20px 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between"><span style="height:44px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#F5F5F7">Share</span><span class="mono" style="font-size:10.5px;letter-spacing:.08em;color:rgba(235,235,245,.34)">3 ITEMS · 9.1 MB</span><span style="height:44px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#D4675C">Delete</span></div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:5"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:0 8px 0;z-index:6;display:flex;flex-direction:column;gap:8px">
+<div style="background:rgba(34,34,38,.97);border-radius:14px;overflow:hidden;backdrop-filter:blur(20px)"><div style="padding:16px 22px;text-align:center;border-bottom:1px solid rgba(255,255,255,.1)"><span style="font-size:13px;line-height:1.5;color:rgba(235,235,245,.6)">These 3 results will be removed from Scally.<br>The originals in your Photos library are untouched.</span></div><div style="padding:17px 20px;text-align:center;font-size:17px;font-weight:600;color:#D4675C">Delete 3 Results</div></div>
+<div style="background:rgba(34,34,38,.97);border-radius:14px;padding:17px 20px;text-align:center;font-size:17px;font-weight:600;color:#F5F5F7;backdrop-filter:blur(20px)">Cancel</div>
+<div style="height:30px"></div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:26px;display:flex;align-items:center;justify-content:center;z-index:7"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.5)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">S2 · Settings</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;padding:6px 20px 0"><span style="font-size:16px;color:rgba(235,235,245,.7)">Back</span></div>
+<div style="flex:none;padding:14px 20px 22px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">Settings</span></div>
+<div style="flex:1;padding:0 20px;display:flex;flex-direction:column;gap:26px;min-height:0">
+<div style="background:#141417;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px"><span style="font-size:16px">Storage used</span><span class="mono" style="font-size:14px;color:rgba(235,235,245,.56)">48.2 MB</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid rgba(255,255,255,.07)"><span style="font-size:16px">Results kept</span><span class="mono" style="font-size:14px;color:rgba(235,235,245,.56)">14</span></div>
+<div style="display:flex;align-items:center;padding:15px 16px;border-top:1px solid rgba(255,255,255,.07)"><span style="font-size:16px;color:#D4675C">Clear history</span></div>
+</div>
+<div style="background:#141417;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px"><span style="font-size:16px">Appearance</span><span style="font-size:15px;color:rgba(235,235,245,.5)">System</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid rgba(255,255,255,.07)"><span style="font-size:16px">Save location</span><span style="font-size:15px;color:rgba(235,235,245,.5)">Photos</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:0 4px">
+<span style="font-size:12.5px;line-height:1.6;color:rgba(235,235,245,.42)">Scally never connects to the internet. There is no account, no analytics, no upload, and nothing to pay for. Your photos and results stay in this app's own storage until you delete them.</span>
+<span class="mono" style="font-size:11px;color:rgba(235,235,245,.28)">VERSION 1.0 · BUILD 118</span>
+</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">S2b · Settings — confirm clear</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;padding:6px 20px 0"><span style="font-size:16px;color:rgba(235,235,245,.7)">Back</span></div>
+<div style="flex:none;padding:14px 20px 22px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">Settings</span></div>
+<div style="flex:1;padding:0 20px;display:flex;flex-direction:column;gap:26px;min-height:0">
+<div style="background:#141417;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px"><span style="font-size:16px">Storage used</span><span class="mono" style="font-size:14px;color:rgba(235,235,245,.56)">48.2 MB</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid rgba(255,255,255,.07)"><span style="font-size:16px">Results kept</span><span class="mono" style="font-size:14px;color:rgba(235,235,245,.56)">14</span></div>
+<div style="display:flex;align-items:center;padding:15px 16px;border-top:1px solid rgba(255,255,255,.07)"><span style="font-size:16px;color:#D4675C">Clear history</span></div>
+</div>
+<div style="background:#141417;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px"><span style="font-size:16px">Appearance</span><span style="font-size:15px;color:rgba(235,235,245,.5)">System</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid rgba(255,255,255,.07)"><span style="font-size:16px">Save location</span><span style="font-size:15px;color:rgba(235,235,245,.5)">Photos</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:0 4px">
+<span style="font-size:12.5px;line-height:1.6;color:rgba(235,235,245,.42)">Scally never connects to the internet. There is no account, no analytics, no upload, and nothing to pay for. Your photos and results stay in this app's own storage until you delete them.</span>
+<span class="mono" style="font-size:11px;color:rgba(235,235,245,.28)">VERSION 1.0 · BUILD 118</span>
+</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:5"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:0 8px 0;z-index:6;display:flex;flex-direction:column;gap:8px">
+<div style="background:rgba(34,34,38,.97);border-radius:14px;overflow:hidden;backdrop-filter:blur(20px)"><div style="padding:16px 22px;text-align:center;border-bottom:1px solid rgba(255,255,255,.1)"><span style="font-size:13px;line-height:1.5;color:rgba(235,235,245,.6)">All 14 results and their 48.2 MB will be removed from Scally.<br>The originals in your Photos library are untouched.</span></div><div style="padding:17px 20px;text-align:center;font-size:17px;font-weight:600;color:#D4675C">Clear All 14 Results</div></div>
+<div style="background:rgba(34,34,38,.97);border-radius:14px;padding:17px 20px;text-align:center;font-size:17px;font-weight:600;color:#F5F5F7;backdrop-filter:blur(20px)">Cancel</div>
+<div style="height:30px"></div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:26px;display:flex;align-items:center;justify-content:center;z-index:7"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.5)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">S3 · Edge — 4× unavailable</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 12px"><span style="font-size:16px;color:rgba(235,235,245,.7)">Back</span><span class="mono" style="font-size:11.5px;letter-spacing:.06em;color:rgba(235,235,245,.5)">IMG_9920.HEIC</span><span style="width:40px"></span></div>
+<div style="flex:1;margin:0 20px;border-radius:20px;overflow:hidden;background:#141417;min-height:0"><img src="img/massage-after.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+<div style="flex:none;padding:18px 20px 0;display:flex;flex-direction:column">
+<div style="display:flex;background:#141417;border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:3px;gap:3px">
+<span class="mono" style="flex:1;text-align:center;padding:12px 0;border-radius:10px;font-size:15px;font-weight:600;background:#2A2A2F">2×</span>
+<span class="mono" style="flex:1;text-align:center;padding:12px 0;border-radius:10px;font-size:15px;font-weight:500;color:rgba(235,235,245,.24)">4×</span>
+</div>
+<div style="margin-top:12px;display:flex;gap:9px;align-items:flex-start;padding:12px 13px;border:1px solid rgba(255,255,255,.1);border-radius:11px;background:#121215"><span style="flex:none;width:16px;height:16px;border-radius:8px;border:1.5px solid #E2A45E;margin-top:1px"></span><span style="font-size:12.5px;line-height:1.5;color:rgba(235,235,245,.72)">4× would need 1.9 GB of memory — more than this iPhone can give a single app. 2× is available.</span></div>
+<div style="margin-top:14px;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">INPUT</span><span class="mono" style="font-size:12.5px">3024 × 4032 px · 4.8 MB</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">OUTPUT</span><span class="mono" style="font-size:12.5px;font-weight:600">6048 × 8064 px · ~18 MB</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(255,255,255,.07)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(235,235,245,.4)">ESTIMATE</span><span class="mono" style="font-size:12.5px">22 s · on device</span></div>
+</div>
+<div style="margin-top:16px;background:#F5F5F7;color:#0B0B0C;border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Upscale 2×</div>
+<div style="height:14px"></div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">S4 · Edge — library access denied</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 22px;min-height:0">
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:12px 2px 0"><span style="font-size:20px;font-weight:600;letter-spacing:-.02em">Scally</span><span style="font-size:14px;color:rgba(235,235,245,.56)">Settings</span></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">
+<div style="border:1px solid rgba(255,255,255,.1);border-radius:20px;background:#141417;padding:24px">
+<span style="font-size:19px;font-weight:600;display:block">No access to your library</span>
+<span style="font-size:14px;line-height:1.55;color:rgba(235,235,245,.6);display:block;margin-top:10px">Scally can only see photos you give it. Nothing is read in the background and nothing is uploaded either way.</span>
+<div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+<div style="background:#F5F5F7;color:#0B0B0C;border-radius:12px;height:48px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Open Settings</div>
+<div style="border:1px solid rgba(255,255,255,.16);border-radius:12px;height:48px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">Choose specific photos</div>
+</div>
+</div>
+<span class="mono" style="font-size:11px;line-height:1.7;color:rgba(235,235,245,.34);text-align:center">SETTINGS → PRIVACY → PHOTOS → SCALLY</span>
+</div>
+<div style="flex:none;padding:0 0 14px;text-align:center;font-size:11.5px;line-height:1.55;color:rgba(235,235,245,.3)">Runs entirely on this iPhone.<br>Nothing is uploaded. No account. No internet.</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(245,245,247,.45)">S5 · Edge — save failed</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 18px 48px rgba(0,0,0,.5)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#0B0B0C;display:flex;flex-direction:column;color:#F5F5F7">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(245,245,247,.5);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#F5F5F7;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:8px 20px"><span style="font-size:16px">Discard</span><span class="mono" style="font-size:11.5px;letter-spacing:.06em;color:rgba(235,235,245,.6)">IMG_4471 · 4×</span><span style="border:1px solid rgba(255,255,255,.24);border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:600;font-family:ui-monospace,Menlo,monospace">100%</span></div>
+<div style="flex:1;position:relative;margin:12px 18px 0;border-radius:20px;overflow:hidden;background:#141417;min-height:0"><img src="img/selfie-after.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:0 0 16px"><span class="mono" style="font-size:11px;letter-spacing:.14em;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.22);padding:11px 20px;border-radius:24px">HOLD TO SEE ORIGINAL</span></div></div>
+<div style="flex:none;margin:14px 20px 0;display:flex;gap:11px;align-items:flex-start;padding:13px 14px;border:1px solid rgba(212,103,92,.45);background:rgba(212,103,92,.12);border-radius:12px"><span style="flex:none;width:16px;height:16px;border-radius:8px;border:1.5px solid #D4675C;margin-top:1px"></span><div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:13.5px;font-weight:600">Couldn't save to Photos</span><span style="font-size:12.5px;line-height:1.45;color:rgba(235,235,245,.62)">Your iPhone storage is full. The result is still here — free up space and try again.</span></div></div>
+<div style="flex:none;padding:14px 20px 0;display:flex;gap:10px">
+<div style="flex:1;background:#F5F5F7;color:#0B0B0C;border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Try again</div>
+<div style="width:96px;border:1px solid rgba(255,255,255,.22);border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">Share</div>
+</div>
+<div style="flex:none;height:26px;margin-top:14px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(245,245,247,.32)"></span></div>
+</div></div></div>
+
+</div></div>
+
+<div class="dv-card" style="background:#FBFBFA;padding:26px">
+<div class="cap" style="color:rgba(0,0,0,.38);margin-bottom:18px">Light</div>
+<div style="display:flex;gap:26px;align-items:flex-start">
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">S1 · History</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0"><span style="font-size:16px;color:rgba(60,60,67,.75)">Back</span><span style="font-size:16px;color:rgba(60,60,67,.75)">Select</span></div>
+<div style="flex:none;padding:14px 20px 18px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">History</span></div>
+<div style="flex:1;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start;min-height:0">
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">TODAY 09:38</span></div></a>
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">TUE 18:02</span></div></a>
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">12 SEP</span></div></a>
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">11 SEP</span></div></a>
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">9 SEP</span></div></a>
+<a href="#r-light" style="display:contents;text-decoration:none;color:inherit"><div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;right:7px;top:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">9 SEP</span></div></a>
+</div>
+<div style="flex:none;padding:16px 20px 10px;text-align:center"><span class="mono" style="font-size:11px;color:rgba(60,60,67,.45)">14 RESULTS · 48.2 MB ON THIS IPHONE</span></div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">S1b · History — selecting</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0"><span style="font-size:16px;color:rgba(60,60,67,.75)">Select All</span><span style="font-size:16px;font-weight:600;color:#0B0B0C">Cancel</span></div>
+<div style="flex:none;padding:14px 20px 18px;display:flex;align-items:baseline;gap:10px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">3 selected</span></div>
+<div style="flex:1;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start;min-height:0">
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1;box-shadow:inset 0 0 0 3px #0B0B0C"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#0B0B0C;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">TODAY 09:38</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">TUE 18:02</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1;box-shadow:inset 0 0 0 3px #0B0B0C"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#0B0B0C;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">12 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1;box-shadow:inset 0 0 0 3px #0B0B0C"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#0B0B0C;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">11 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">9 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">9 SEP</span></div>
+</div>
+<div style="flex:none;margin:14px 20px 0;padding-top:12px;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between"><span style="height:44px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#0B0B0C">Share</span><span class="mono" style="font-size:10.5px;letter-spacing:.08em;color:rgba(60,60,67,.45)">3 ITEMS · 9.1 MB</span><span style="height:44px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#B3392C">Delete</span></div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">S1c · History — confirm delete</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0"><span style="font-size:16px;color:rgba(60,60,67,.75)">Select All</span><span style="font-size:16px;font-weight:600;color:#0B0B0C">Cancel</span></div>
+<div style="flex:none;padding:14px 20px 18px;display:flex;align-items:baseline;gap:10px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">3 selected</span></div>
+<div style="flex:1;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start;min-height:0">
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1;box-shadow:inset 0 0 0 3px #0B0B0C"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#0B0B0C;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">TODAY 09:38</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">TUE 18:02</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1;box-shadow:inset 0 0 0 3px #0B0B0C"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#0B0B0C;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">12 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1;box-shadow:inset 0 0 0 3px #0B0B0C"><img src="img/selfie-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">2×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;background:#0B0B0C;display:flex;align-items:center;justify-content:center"><span style="position:absolute;width:6px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(-3px,1.5px) rotate(45deg)"></span><span style="position:absolute;width:11px;height:1.75px;border-radius:1px;background:#FFFFFF;transform:translate(2px,-0.5px) rotate(-45deg)"></span></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">11 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/massage-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">9 SEP</span></div>
+<div style="display:flex;flex-direction:column;gap:7px"><div style="position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#EFEFF1"><img src="img/headshot-thumb.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><span class="mono" style="position:absolute;left:7px;bottom:7px;font-size:9.5px;font-weight:600;color:#fff;background:rgba(0,0,0,.6);padding:2.5px 6px;border-radius:5px">4×</span><span style="position:absolute;right:7px;top:7px;width:22px;height:22px;border-radius:11px;border:1.5px solid rgba(255,255,255,.8);background:rgba(0,0,0,.22)"></span></div><span class="mono" style="font-size:10px;color:rgba(60,60,67,.45)">9 SEP</span></div>
+</div>
+<div style="flex:none;margin:14px 20px 0;padding-top:12px;border-top:1px solid rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between"><span style="height:44px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#0B0B0C">Share</span><span class="mono" style="font-size:10.5px;letter-spacing:.08em;color:rgba(60,60,67,.45)">3 ITEMS · 9.1 MB</span><span style="height:44px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#B3392C">Delete</span></div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.32);z-index:5"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:0 8px 0;z-index:6;display:flex;flex-direction:column;gap:8px">
+<div style="background:rgba(250,250,252,.97);border-radius:14px;overflow:hidden;backdrop-filter:blur(20px)"><div style="padding:16px 22px;text-align:center;border-bottom:1px solid rgba(0,0,0,.1)"><span style="font-size:13px;line-height:1.5;color:rgba(60,60,67,.65)">These 3 results will be removed from Scally.<br>The originals in your Photos library are untouched.</span></div><div style="padding:17px 20px;text-align:center;font-size:17px;font-weight:600;color:#B3392C">Delete 3 Results</div></div>
+<div style="background:rgba(250,250,252,.97);border-radius:14px;padding:17px 20px;text-align:center;font-size:17px;font-weight:600;color:#0B0B0C;backdrop-filter:blur(20px)">Cancel</div>
+<div style="height:30px"></div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:26px;display:flex;align-items:center;justify-content:center;z-index:7"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.35)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">S2 · Settings</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#F2F2F5;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;padding:6px 20px 0"><span style="font-size:16px;color:rgba(60,60,67,.75)">Back</span></div>
+<div style="flex:none;padding:14px 20px 22px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">Settings</span></div>
+<div style="flex:1;padding:0 20px;display:flex;flex-direction:column;gap:26px;min-height:0">
+<div style="background:#FFFFFF;border:1px solid rgba(0,0,0,.07);border-radius:14px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px"><span style="font-size:16px">Storage used</span><span class="mono" style="font-size:14px;color:rgba(60,60,67,.62)">48.2 MB</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid rgba(0,0,0,.07)"><span style="font-size:16px">Results kept</span><span class="mono" style="font-size:14px;color:rgba(60,60,67,.62)">14</span></div>
+<div style="display:flex;align-items:center;padding:15px 16px;border-top:1px solid rgba(0,0,0,.07)"><span style="font-size:16px;color:#B3392C">Clear history</span></div>
+</div>
+<div style="background:#FFFFFF;border:1px solid rgba(0,0,0,.07);border-radius:14px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px"><span style="font-size:16px">Appearance</span><span style="font-size:15px;color:rgba(60,60,67,.55)">System</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid rgba(0,0,0,.07)"><span style="font-size:16px">Save location</span><span style="font-size:15px;color:rgba(60,60,67,.55)">Photos</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:0 4px">
+<span style="font-size:12.5px;line-height:1.6;color:rgba(60,60,67,.6)">Scally never connects to the internet. There is no account, no analytics, no upload, and nothing to pay for. Your photos and results stay in this app's own storage until you delete them.</span>
+<span class="mono" style="font-size:11px;color:rgba(60,60,67,.4)">VERSION 1.0 · BUILD 118</span>
+</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">S2b · Settings — confirm clear</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#F2F2F5;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;padding:6px 20px 0"><span style="font-size:16px;color:rgba(60,60,67,.75)">Back</span></div>
+<div style="flex:none;padding:14px 20px 22px"><span style="font-size:32px;font-weight:600;letter-spacing:-.025em">Settings</span></div>
+<div style="flex:1;padding:0 20px;display:flex;flex-direction:column;gap:26px;min-height:0">
+<div style="background:#FFFFFF;border:1px solid rgba(0,0,0,.07);border-radius:14px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px"><span style="font-size:16px">Storage used</span><span class="mono" style="font-size:14px;color:rgba(60,60,67,.62)">48.2 MB</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid rgba(0,0,0,.07)"><span style="font-size:16px">Results kept</span><span class="mono" style="font-size:14px;color:rgba(60,60,67,.62)">14</span></div>
+<div style="display:flex;align-items:center;padding:15px 16px;border-top:1px solid rgba(0,0,0,.07)"><span style="font-size:16px;color:#B3392C">Clear history</span></div>
+</div>
+<div style="background:#FFFFFF;border:1px solid rgba(0,0,0,.07);border-radius:14px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px"><span style="font-size:16px">Appearance</span><span style="font-size:15px;color:rgba(60,60,67,.55)">System</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid rgba(0,0,0,.07)"><span style="font-size:16px">Save location</span><span style="font-size:15px;color:rgba(60,60,67,.55)">Photos</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:0 4px">
+<span style="font-size:12.5px;line-height:1.6;color:rgba(60,60,67,.6)">Scally never connects to the internet. There is no account, no analytics, no upload, and nothing to pay for. Your photos and results stay in this app's own storage until you delete them.</span>
+<span class="mono" style="font-size:11px;color:rgba(60,60,67,.4)">VERSION 1.0 · BUILD 118</span>
+</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+
+<div style="position:absolute;inset:0;background:rgba(0,0,0,.32);z-index:5"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;padding:0 8px 0;z-index:6;display:flex;flex-direction:column;gap:8px">
+<div style="background:rgba(250,250,252,.97);border-radius:14px;overflow:hidden;backdrop-filter:blur(20px)"><div style="padding:16px 22px;text-align:center;border-bottom:1px solid rgba(0,0,0,.1)"><span style="font-size:13px;line-height:1.5;color:rgba(60,60,67,.65)">All 14 results and their 48.2 MB will be removed from Scally.<br>The originals in your Photos library are untouched.</span></div><div style="padding:17px 20px;text-align:center;font-size:17px;font-weight:600;color:#B3392C">Clear All 14 Results</div></div>
+<div style="background:rgba(250,250,252,.97);border-radius:14px;padding:17px 20px;text-align:center;font-size:17px;font-weight:600;color:#0B0B0C;backdrop-filter:blur(20px)">Cancel</div>
+<div style="height:30px"></div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;height:26px;display:flex;align-items:center;justify-content:center;z-index:7"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.35)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">S3 · Edge — 4× unavailable</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 12px"><span style="font-size:16px;color:rgba(60,60,67,.75)">Back</span><span class="mono" style="font-size:11.5px;letter-spacing:.06em;color:rgba(60,60,67,.55)">IMG_9920.HEIC</span><span style="width:40px"></span></div>
+<div style="flex:1;margin:0 20px;border-radius:20px;overflow:hidden;background:#F2F2F4;min-height:0"><img src="img/massage-after.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+<div style="flex:none;padding:18px 20px 0;display:flex;flex-direction:column">
+<div style="display:flex;background:#EEEEF1;border-radius:13px;padding:3px;gap:3px">
+<span class="mono" style="flex:1;text-align:center;padding:12px 0;border-radius:10px;font-size:15px;font-weight:600;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.14)">2×</span>
+<span class="mono" style="flex:1;text-align:center;padding:12px 0;border-radius:10px;font-size:15px;font-weight:500;color:rgba(60,60,67,.3)">4×</span>
+</div>
+<div style="margin-top:12px;display:flex;gap:9px;align-items:flex-start;padding:12px 13px;border:1px solid rgba(0,0,0,.1);border-radius:11px;background:#F8F6F3"><span style="flex:none;width:16px;height:16px;border-radius:8px;border:1.5px solid #A8641F;margin-top:1px"></span><span style="font-size:12.5px;line-height:1.5;color:rgba(60,60,67,.85)">4× would need 1.9 GB of memory — more than this iPhone can give a single app. 2× is available.</span></div>
+<div style="margin-top:14px;display:flex;flex-direction:column">
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.45)">INPUT</span><span class="mono" style="font-size:12.5px">3024 × 4032 px · 4.8 MB</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.45)">OUTPUT</span><span class="mono" style="font-size:12.5px;font-weight:600">6048 × 8064 px · ~18 MB</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)"><span class="mono" style="font-size:11px;letter-spacing:.1em;color:rgba(60,60,67,.45)">ESTIMATE</span><span class="mono" style="font-size:12.5px">22 s · on device</span></div>
+</div>
+<div style="margin-top:16px;background:#0B0B0C;color:#FFFFFF;border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Upscale 2×</div>
+<div style="height:14px"></div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">S4 · Edge — library access denied</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 22px;min-height:0">
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:12px 2px 0"><span style="font-size:20px;font-weight:600;letter-spacing:-.02em">Scally</span><span style="font-size:14px;color:rgba(60,60,67,.62)">Settings</span></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px">
+<div style="border:1px solid rgba(0,0,0,.09);border-radius:20px;background:#F6F6F7;padding:24px">
+<span style="font-size:19px;font-weight:600;display:block">No access to your library</span>
+<span style="font-size:14px;line-height:1.55;color:rgba(60,60,67,.65);display:block;margin-top:10px">Scally can only see photos you give it. Nothing is read in the background and nothing is uploaded either way.</span>
+<div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+<div style="background:#0B0B0C;color:#FFFFFF;border-radius:12px;height:48px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Open Settings</div>
+<div style="border:1px solid rgba(0,0,0,.16);border-radius:12px;height:48px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;background:#FFFFFF">Choose specific photos</div>
+</div>
+</div>
+<span class="mono" style="font-size:11px;line-height:1.7;color:rgba(60,60,67,.45);text-align:center">SETTINGS → PRIVACY → PHOTOS → SCALLY</span>
+</div>
+<div style="flex:none;padding:0 0 14px;text-align:center;font-size:11.5px;line-height:1.55;color:rgba(60,60,67,.45)">Runs entirely on this iPhone.<br>Nothing is uploaded. No account. No internet.</div>
+</div>
+<div style="flex:none;height:26px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+<div style="flex:none;display:flex;flex-direction:column;gap:9px">
+<div class="cap" style="color:rgba(0,0,0,.45)">S5 · Edge — save failed</div>
+<div style="width:410px;height:864px;background:#1C1C1F;border-radius:56px;padding:10px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+<div style="position:relative;width:390px;height:844px;border-radius:46px;overflow:hidden;background:#FFFFFF;display:flex;flex-direction:column;color:#0B0B0C">
+<div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:18px;background:#000"></div>
+<div style="flex:none;height:56px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 7px;font-size:15px;font-weight:600"><span>9:41</span><span style="display:flex;align-items:center;gap:7px"><span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:.04em">5G</span><span style="width:25px;height:12px;border:1px solid rgba(0,0,0,.4);border-radius:3.5px;padding:1.5px;display:flex"><span style="width:72%;background:#0B0B0C;border-radius:1.5px"></span></span></span></div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:8px 20px"><span style="font-size:16px">Discard</span><span class="mono" style="font-size:11.5px;letter-spacing:.06em;color:rgba(60,60,67,.6)">IMG_4471 · 4×</span><span style="border:1px solid rgba(0,0,0,.2);border-radius:20px;padding:6px 13px;font-size:12.5px;font-weight:600;font-family:ui-monospace,Menlo,monospace">100%</span></div>
+<div style="flex:1;position:relative;margin:12px 18px 0;border-radius:20px;overflow:hidden;background:#EFEFF1;min-height:0"><img src="img/selfie-after.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:0 0 16px"><span class="mono" style="font-size:11px;letter-spacing:.14em;color:#fff;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.22);padding:11px 20px;border-radius:24px">HOLD TO SEE ORIGINAL</span></div></div>
+<div style="flex:none;margin:14px 20px 0;display:flex;gap:11px;align-items:flex-start;padding:13px 14px;border:1px solid rgba(179,57,44,.35);background:rgba(179,57,44,.07);border-radius:12px"><span style="flex:none;width:16px;height:16px;border-radius:8px;border:1.5px solid #B3392C;margin-top:1px"></span><div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:13.5px;font-weight:600">Couldn't save to Photos</span><span style="font-size:12.5px;line-height:1.45;color:rgba(60,60,67,.7)">Your iPhone storage is full. The result is still here — free up space and try again.</span></div></div>
+<div style="flex:none;padding:14px 20px 0;display:flex;gap:10px">
+<div style="flex:1;background:#0B0B0C;color:#FFFFFF;border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Try again</div>
+<div style="width:96px;border:1px solid rgba(0,0,0,.16);border-radius:14px;height:54px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500">Share</div>
+</div>
+<div style="flex:none;height:26px;margin-top:14px;display:flex;align-items:center;justify-content:center"><span style="width:134px;height:5px;border-radius:3px;background:rgba(0,0,0,.28)"></span></div>
+</div></div></div>
+
+</div></div>
+</div>
+
+</div>
+</section>
+</x-dc>
+</body>
+</html>
